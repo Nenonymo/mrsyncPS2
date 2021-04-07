@@ -503,8 +503,6 @@ CREDITS
        page.
 
 AUTHORS
-       This mrsync has been written by :
-            Adeline Alaux (L2 Maths-Info)
-            Némo Chentre (L2 Info)
-            
+       This mrsync has been written by [TO BE COMPLETED BY STUDENTS].
+
                                   L2 info math-info 2021              mrsync(1)
