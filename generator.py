@@ -10,8 +10,23 @@ import os
     #sinon on compare le fichier dans le rep de receiver et e fichier dans le rep de sender 
     #en local on fair avec whole-file par defaut
 
+def sort_receiver(dir):
+    i=0
+    while i < len(dir):
+        if os.path.isdir(dir[i]):
+            j=i+1
+            while os.path.isdir(dir[j]) and j < len(dir):
+                j=j+1
+            if j == len(dir):
+                i = j
+            else:
+                tmp = dir[i]
+                dir[i]=dir[j]
+                dir[j]=tmp
+
+
 def delete_files(file_list_receiver,file_list_sender):
-#receiver trié avec les fichiers avant les repertoires, avec noms de fichiers absolu
+    sort_receiver(file_list_receiver)  #receiver trié avec le repertoires à la fin
     for elt in file_list_receiver:
         if not elt in file_list_sender:
             if os.path.isdir(elt):
@@ -19,6 +34,6 @@ def delete_files(file_list_receiver,file_list_sender):
             else:
                 os.unlink(elt)
 
-def generator_local(dirs,dirrfile_list_sender,file_list_receiver,dict):
+def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dict):
     if dict["--delete"]:
-        
+        delete_files(file_list_receiver,file_list_sender)
