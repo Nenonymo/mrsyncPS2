@@ -37,3 +37,7 @@ def delete_files(file_list_receiver,file_list_sender):
 def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dict):
     if dict["--delete"]:
         delete_files(file_list_receiver,file_list_sender)
+    send_list=[]
+    for elt in file_list_receiver:
+        #si pas skip on ajoute
+        #si skip on ajoute pas
