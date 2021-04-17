@@ -6,7 +6,6 @@ def parser(args) :
     arguments = []
     dic = {'-v':False, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--times':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--ignore-times':False, '--size-only':False, '--adress':'', '--port':'', '--list-only':False, '-h':False,}
     for i in args :
-        print(i)
         if i[0] == '-' :
             arguments += [i]
         else :
