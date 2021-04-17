@@ -12,9 +12,9 @@ def parcours_rec(dir):
         name = os.path.join(dir,elt)
         st = os.stat(name)
         if os.path.isdir(name):
-            file_list = file_list+[{'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,R_OK),os.access(name,W_OK),os.access(name,X_OK)],'size':st[6],'modtime':st[8]}]+parcours_rec(name)
+            file_list = file_list+[{'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st[6],'modtime':st[8]}]+parcours_rec(name)
         if os.path.isfile(name):
-            file_list.append({'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,R_OK),os.access(name,W_OK),os.access(name,X_OK)],'size':st[6],'modtime':st[8]})
+            file_list.append({'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st[6],'modtime':st[8]})
     return file_list
 
 def parcours(dir,dic):#atention affiche les fichiers caches
@@ -27,22 +27,22 @@ def parcours(dir,dic):#atention affiche les fichiers caches
         dir = os.path.join(os.getcwd(),dir)
     if os.path.isfile(dir) or os.path.islink(dir):
         st=os.stat(dir)
-        file_list.append({'name':dir,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(dir,R_OK),os.access(dir,W_OK),os.access(dir,X_OK)],'size':st[6],'modtime':st[8]})
+        file_list.append({'name':dir,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(dir,os.R_OK),os.access(dir,os.W_OK),os.access(dir,os.X_OK)],'size':st[6],'modtime':st[8]})
     elif dic['-r']:
         curr_dir = os.listdir(dir)
         for elt in curr_dir:
             name = os.path.join(dir,elt)
             st = os.stat(name)
             if os.path.isfile(name):
-                file_list.append({'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,R_OK),os.access(name,W_OK),os.access(name,X_OK)],'size':st[6],'modtime':st[8]})
+                file_list.append({'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st[6],'modtime':st[8]})
             else :
-                file_list=file_list+[{'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,R_OK),os.access(name,W_OK),os.access(name,X_OK)],'size':st[6],'modtime':st[8]}]+parcours_rec(name)
+                file_list=file_list+[{'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st[6],'modtime':st[8]}]+parcours_rec(name)
     else :
         curr_dir = os.listdir(dir)
         for elt in curr_dir:
             name = os.path.join(dir,elt)
             st=os.stat(name)
-            file_list.append({'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,R_OK),os.access(name,W_OK),os.access(name,X_OK)],'size':st[6],'modtime':st[8]})
+            file_list.append({'name':name,'user':st[4],'groupe':st[5],'mode':st[0],'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st[6],'modtime':st[8]})
     return file_list
 
 if __name__ == "__main__":
