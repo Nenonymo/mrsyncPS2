@@ -22,9 +22,10 @@ def parcours(dir,dic):#atention affiche les fichiers caches
         dir = os.getcwd()
     elif dir == '..' :
         dir = os.path.split(os.getcwd())[0]
+    else :
+        dir = os.path.join(os.getcwd(),dir)
     if os.path.isfile(dir) or os.path.islink(dir):
-        name = os.path.join(dir,elt)
-        file_list.append([name]+os.stat(name))
+        file_list.append([dir]+os.stat(dir))
     elif dic['-r']:
         curr_dir = os.listdir(dir)
         for elt in curr_dir:
