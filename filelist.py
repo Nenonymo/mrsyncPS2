@@ -1,5 +1,11 @@
 import os
 
+#ajouter ownership, mode, permissions, size et modtime
+#si --checksum ajouter the file checksums
+
+#chaque fichier est transmis au fur et a mesure ? optimisation ?
+#trie de la liste ? par filelist ou ailleurs ? -> ailleurs
+
 def parcours_rec(dir):
     curr_dir = os.listdir(dir)
     file_list=[]
