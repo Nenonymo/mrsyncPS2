@@ -44,8 +44,8 @@ def skip(file,file_list_receiver):
 #gestion des fichiers spéciaux (device node) ?
     return False
 
-def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dict):
-    if dict["--delete"]:
+def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic):
+    if dic["--delete"]:
         delete_files(file_list_receiver,file_list_sender)
     send_list=[]
     for elt in file_list_receiver:

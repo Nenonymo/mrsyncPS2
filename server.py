@@ -13,11 +13,11 @@ def father_local(): #receive
     
 
 
-def server_local(dirs,dirr,dict):
+def server_local(dirs,dirr,dic):
     rfds,wfdr = os.pipe()
     rfdr,wfds = os.pipe()
-    file_list_sender = send_local(dirs,dict)
-    file_list_receiver = receive_local(dirr,dict)
+    file_list_sender = send_local(dirs,dic)
+    file_list_receiver = receive_local(dirr,dic)
     childpid = os.fork()
     if childpid == 0 :
         child_local()

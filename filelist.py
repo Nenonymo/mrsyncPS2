@@ -16,13 +16,13 @@ def parcours_rec(dir):
             file_list.append([name]+os.stat(name))
     return file_list
 
-def parcours(dir,dict):#atention affiche les fichiers cachés
+def parcours(dir,dic):#atention affiche les fichiers cachés
     file_list=[]
     if dir == '.' :
         dir = os.getcwd()
     elif dir == '..' :
         dir = os.path.split(os.getcwd())[0]
-    if dict['-r']:
+    if dic['-r']:
         curr_dir = os.listdir(dir)
         for elt in curr_dir:
             name = os.path.join(dir,elt)
