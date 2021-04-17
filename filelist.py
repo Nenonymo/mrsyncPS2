@@ -25,7 +25,13 @@ def parcours(dir,dic):#atention affiche les fichiers caches
     else :
         dir = os.path.join(os.getcwd(),dir)
     if os.path.isfile(dir) or os.path.islink(dir):
-        file_list.append([dir]+os.stat(dir))
+        stat = os.stat(dir)
+        m_time = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(stat.st_mtime)).split()
+        date = m_time[0]
+        time = m_time[1]
+        size = stat.st_size
+        mask = ''     #à compléter
+        file_list.append((mask, size, date, time, dir))    #Je renvoie un tuple et non une liste, fais comme tu veux, peu importe
     elif dic['-r']:
         curr_dir = os.listdir(dir)
         for elt in curr_dir:
