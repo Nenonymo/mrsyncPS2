@@ -1,5 +1,7 @@
 import filelist
 
+#brouillon
+
 def send_listonly(dir,dict):
     file_list = filelist.parcours(dir,dict)
     for elt in file_list:

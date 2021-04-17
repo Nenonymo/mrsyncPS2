@@ -1,5 +1,7 @@
 import os, sender, receiver
 
+#brouillon, pas construit
+
 def child_local(): #send
     os.close(rfds)
     os.close(wfdr)
