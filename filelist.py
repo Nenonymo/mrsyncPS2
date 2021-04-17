@@ -1,6 +1,6 @@
 import os
 
-#ajouter ownership, mode, permissions, size et modtime
+#ajouter ownership, mode, permissions, size et modtime -> ok
 #si --checksum ajouter the file checksums
 
 #chaque fichier est transmis au fur et a mesure ? optimisation ?
@@ -17,7 +17,7 @@ def parcours_rec(dir):
             file_list.append({'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st.st_size,'modtime':st.st_mtime})
     return file_list
 
-def parcours(dir,dic):#atention affiche les fichiers caches
+def parcours(dir,dic): #fichiers caches compris
     file_list=[]
     if dir == '.' :
         dir = os.getcwd()
@@ -44,6 +44,3 @@ def parcours(dir,dic):#atention affiche les fichiers caches
             st=os.stat(name)
             file_list.append({'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'perm':[os.access(name,os.R_OK),os.access(name,os.W_OK),os.access(name,os.X_OK)],'size':st.st_size,'modtime':st.st_mtime})
     return file_list
-
-if __name__ == "__main__":
-    print(parcours("/home/kf/Bureau/test",{"-r":True}))
