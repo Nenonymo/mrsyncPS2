@@ -5,11 +5,13 @@ import os, sender, receiver
 def child_local(): #send
     os.close(rfds)
     os.close(wfdr)
+    #envoit la liste de fichier au receveur
 
 
 def father_local(): #receive
     os.close(rfdr)
     os.close(wfds)
+    #attends la liste de fichier du sender
     
 
 
