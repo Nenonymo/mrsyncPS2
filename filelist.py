@@ -11,12 +11,12 @@ def parcours_rec(dir):
     for elt in curr_dir:
         name = os.path.join(dir,elt)
         if os.path.isdir(name):
-            file_list = file_list+[[name]+os.stat(name)]+parcours_rec(name))
+            file_list = file_list+[[name]+os.stat(name)]+parcours_rec(name)
         if os.path.isfile(name):
             file_list.append([name]+os.stat(name))
     return file_list
 
-def parcours(dir,dic):#atention affiche les fichiers cachés
+def parcours(dir,dic):#atention affiche les fichiers caches
     file_list=[]
     if dir == '.' :
         dir = os.getcwd()
@@ -29,7 +29,7 @@ def parcours(dir,dic):#atention affiche les fichiers cachés
             if os.path.isfile(name):
                 file_list.append([name]+os.stat(name))
             else :
-                file_list=file_list+[[name]+os.stat(name)]+parcours_rec(name))
+                file_list=file_list+[[name]+os.stat(name)]+parcours_rec(name)
     else :
         curr_dir = os.listdir(dir)
         for elt in curr_dir:
