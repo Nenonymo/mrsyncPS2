@@ -12,3 +12,4 @@ def send_listonly(lis_dir,dic): #améliorer l'affichage
 def send_local(dir,dic):
     file_lists = filelist.parcours(dir,dic)
     return file_lists
+    #envoit la liste de fichier au receveur qui crée le generateur
