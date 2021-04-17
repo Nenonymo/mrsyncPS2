@@ -2,7 +2,7 @@ import filelist
 
 #brouillon
 
-def send_listonly(lis_dir,dic):
+def send_listonly(lis_dir,dic): #améliorer l'affichage
     file_list=[]
     for dir in lis_dir:
         file_list = file_list + filelist.parcours(dir,dic)

@@ -13,9 +13,9 @@ import os
 def sort_receiver(dir):
     i=0
     while i < len(dir):
-        if os.path.isdir(dir[i]):
+        if os.path.isdir(dir[i]['name']):
             j=i+1
-            while os.path.isdir(dir[j]) and j < len(dir):
+            while os.path.isdir(dir[j]['name']) and j < len(dir):
                 j=j+1
             if j == len(dir):
                 i = j
@@ -28,26 +28,33 @@ def sort_receiver(dir):
 def delete_files(file_list_receiver,file_list_sender):
     sort_receiver(file_list_receiver)  #receiver trié avec le repertoires à la fin
     for elt in file_list_receiver:
-        if not elt in file_list_sender:
-            if os.path.isdir(elt):
-                os.rmdir(elt)
+        test = True
+        for e in file_list_sender:
+            if elt['name'] == e['name']:
+                test = False
+                break
+        if test:
+            if os.path.isdir(elt['name']):
+                os.rmdir(elt['name'])
             else:
-                os.unlink(elt)
+                os.unlink(elt['name'])
 
-def skip(file,file_list_receiver):
+def no_skip(file,file_list_receiver):
     for elt in file_list_receiver:
-        if elt == file :
-            if os.path.isdir(elt) or os.path.islink(elt):
-                return True
-            elif os.path.isfile(elt):
-            #on skip pas si date de modification ou taille du fichier differents
+        if elt['name'] == file['name'] :
+            if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
+                return False
+            elif os.path.isfile(elt['name']):
+                if elt['size'] == file['size'] and elt['modtime'] == file['modtime']:
+                    return False
 #gestion des fichiers spéciaux (device node) ?
-    return False
+    return True
 
 def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic):
     if dic["--delete"]:
         delete_files(file_list_receiver,file_list_sender)
     send_list=[]
     for elt in file_list_receiver:
-        if not skip(elt):
+        if no_skip(elt,file_list_receiver):
             send_list.append(elt)
+    return send_list
