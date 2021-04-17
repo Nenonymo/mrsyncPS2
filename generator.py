@@ -34,10 +34,20 @@ def delete_files(file_list_receiver,file_list_sender):
             else:
                 os.unlink(elt)
 
+def skip(file,file_list_receiver):
+    for elt in file_list_receiver:
+        if elt == file :
+            if os.path.isdir(elt) or os.path.islink(elt):
+                return True
+            elif os.path.isfile(elt):
+            #on skip pas si date de modification ou taille du fichier differents
+#gestion des fichiers spéciaux (device node) ?
+    return False
+
 def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dict):
     if dict["--delete"]:
         delete_files(file_list_receiver,file_list_sender)
     send_list=[]
     for elt in file_list_receiver:
-        #si pas skip on ajoute
-        #si skip on ajoute pas
+        if not skip(elt):
+            send_list.append(elt)
