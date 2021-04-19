@@ -1,4 +1,4 @@
-import os, sys, filelist, time
+import os, sys, filelist, time, stat
 
 def send_listonly(lis_dir,dic):
     #On exclu les fichiers traités plusieurs fois (peut-on faire plus simple ?)
@@ -30,7 +30,7 @@ def send_listonly(lis_dir,dic):
     
     #L'affichage
     for elt in file_list:
-        print('{}{}{}{} {:>14} {} {}'.format('d' if os.path.isdir(elt['name']) else '-', 'r' if elt['perm'][0] else '-', 'w' if elt['perm'][1] else '-', 'x' if elt['perm'][2] else '-', elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name'][len(cwd):]))
+        print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name'][len(cwd):]))
 
 def send_local(dir,dic):
     file_lists = filelist.parcours(dir,dic)
