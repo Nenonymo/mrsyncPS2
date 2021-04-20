@@ -3,5 +3,5 @@ import os,filelist
 #brouillon
 
 def receive_local(dir,dic):
-    os.chdir(dir)
     file_listr = filelist.parcours(dir,dic)
+    #recoit la liste de l'envoyeur et crée le generateur
