@@ -50,11 +50,11 @@ def no_skip(file,file_list_receiver):
 #gestion des fichiers spéciaux (device node) ?
     return True
 
-def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic):
+def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     if dic["--delete"]:
         delete_files(file_list_receiver,file_list_sender)
     send_list=[]
     for elt in file_list_receiver:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
-    return send_list
+    envoit(gs_g,tag,send_list) #envoit la sendlist au sender
