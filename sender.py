@@ -35,4 +35,4 @@ def send_listonly(lis_dir,dic):
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     file_list = filelist.parcours(dir,dic)
     envoit(sr_s,tag,file_list) #envoit la liste de fichier au receveur
-    tag,datarecoit(gs_s) #recoit la liste de fichier a envoyer
+    tag,data = recoit(gs_s) #recoit la liste de fichier a envoyer
