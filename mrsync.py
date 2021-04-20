@@ -1,4 +1,4 @@
-import os, sys, options, sender
+import os, sys, options, sender, server
 
 if __name__ == '__main__' :
     dic, files, dest = options.parser(sys.argv)
@@ -10,6 +10,6 @@ if __name__ == '__main__' :
         gs_s,gs_g = os.pipe()
         pid=os.fork()
         if pid == 0 :
-            server_local(files,dest,dic,gs_g,sr_r)
+            server.server_local(files,dest,dic,gs_g,sr_r)
         else :
-            send_local(files,dic,gs_s,sr_s)
+            sender.send_local(files,dic,gs_s,sr_s)
