@@ -9,10 +9,7 @@ def parser(args) :
         if i[0] == '-' :
             arguments += [i]
         else :
-            if os.path.isdir(i) and i[-1] != '/' :
-                fichiers += [i + '/']
-            else :
-                fichiers += [i]
+            fichiers += [i]
     if len(fichiers) == 0 :
         raise Exception('Pas de fichier')
     elif len(fichiers) > 1 :

@@ -17,7 +17,7 @@ def send_listonly(lis_dir,dic):
                 if os.path.split(lis_dir[i])[0] + '/' == lis_dir[j] :
                     del lis_dir[i]
     
-    #On cherche le dossier le plus englobant
+    #On cherche le dossier le plus englobant pour pouvoir faire le chemin relatif en partant de là
     cwd = os.getcwd()
     for elt in lis_dir:
         while cwd != os.path.abspath(elt)[:len(cwd)]:
