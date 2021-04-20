@@ -1,4 +1,4 @@
-import os
+import os, message
     #si --delete : supprime les fic+rep de receiver pas dans sender
 
     #on parcours file_list_sender et on retient les fichiers qui ne sont pas dans receiver
@@ -57,4 +57,4 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     for elt in file_list_receiver:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
-    envoit(gs_g,tag,send_list) #envoit la sendlist au sender
+    message.envoit(gs_g,tag,send_list) #envoit la sendlist au sender

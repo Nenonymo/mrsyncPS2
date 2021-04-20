@@ -1,4 +1,4 @@
-import os, sys, filelist, time, stat
+import os, sys, filelist, time, stat, message
 
 def send_listonly(lis_dir,dic):
     #On exclu les fichiers traités plusieurs fois (peut-on faire plus simple ?)
@@ -34,5 +34,5 @@ def send_listonly(lis_dir,dic):
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     file_list = filelist.parcours(dir,dic)
-    envoit(sr_s,tag,file_list) #envoit la liste de fichier au receveur
-    tag,data = recoit(gs_s) #recoit la liste de fichier a envoyer
+    message.envoit(sr_s,tag,file_list) #envoit la liste de fichier au receveur
+    tag,data = message.recoit(gs_s) #recoit la liste de fichier a envoyer
