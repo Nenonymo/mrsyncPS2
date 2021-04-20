@@ -4,4 +4,4 @@ import os,filelist
 
 def receive_local(dir,dic):
     os.chdir(dir)
-    file_listr = filelist.parcours('.',dic)
+    file_listr = filelist.parcours(dir,dic)
