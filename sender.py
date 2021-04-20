@@ -32,7 +32,7 @@ def send_listonly(lis_dir,dic):
     for elt in file_list:
         print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name'][len(cwd) + 1:]))
 
-def send_local(dir,dic): #s'occupe des checksum
+def send_local(dir,dic,sr_w,rs_r): #s'occupe des checksum
     file_list = filelist.parcours(dir,dic)
-    
+    send(sr_w,tag,file_list)
     #envoit la liste de fichier au receveur qui crée le generateur
