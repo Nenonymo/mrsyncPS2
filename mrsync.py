@@ -6,10 +6,10 @@ if __name__ == '__main__' :
     if dic['--list-only'] :
         sender.send_listonly(files, dic)
     else : #si local
-        sr_r,sr_w = os.pipe()
-        rs_r,rs_w = os.pipe()
+        sr_r,sr_s = os.pipe()
+        gs_s,gs_g = os.pipe()
         pid=os.fork()
         if pid == 0 :
-            server_local(files,dest,dic,sr_r,rs_w)
+            server_local(files,dest,dic,gs_g,sr_r)
         else :
-            send_local(files,dic,sr_w,rs_r)
+            send_local(files,dic,gs_s,sr_s)
