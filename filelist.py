@@ -1,9 +1,6 @@
 import os
 
-#ajouter ownership, mode, permissions, size et modtime -> ok
 #si --checksum ajouter the file checksums
-
-#chaque fichier est transmis au fur et a mesure ? optimisation ?
 
 def parcours_simple(dir):
     curr_dir = os.listdir(dir)
@@ -58,12 +55,10 @@ def norm_liste_dir(lis_dir, dic) :
     else :
         i = 0
         while i < len(lis_dir) :
-            if lis_dir[i] == '.' or lis_dir[i] == './' :
-                lis_dir = lis_dir[:i + 1] + [elt for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
-            elif lis_dir[i][-1]=='/':
-                lis_dir[i]== os.path.abspath(lis_dir[i])+'/'
-            elif lis_dir[i].startswith('./') :
-                lis_dir[i] = lis_dir[i][2:]
+            if lis_dir[i][-1]=='/':
+                lis_dir[i]= os.path.abspath(lis_dir[i])+'/'
+            else :
+                lis_dir[i] = os.path.abspath(lis_dir[i])
             i += 1
         i = 0
         while i < len(lis_dir) :
@@ -83,8 +78,4 @@ def filelist(lis_dir,dic):
     return file_list
 
 #bug
-#../myfiles/ : bug dans l'affichage des noms avec cwd 
-#../ : affiche une ligne avec pas de noms (le nom de ..)
-#.. : affiche .. au lieu du nom du repertoire
-#. : affiche . et l'interieur
-#./ : affiche . et en doucble
+#affichage du nom absolu, j'ai du enlever le truc avec cwd provisoirement
