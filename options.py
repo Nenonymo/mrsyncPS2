@@ -38,36 +38,3 @@ def parser(args) :
                 
 
     return dic, fichiers, destination
-
-def norm_liste_dir(lis_dir, dic) :
-    #On créé la liste complète (sauf avec -r) de fichiers à traiter en faisant gaffe aux doublons
-    if dic['-r'] :
-        i = 0
-        while i < len(lis_dir) :
-            j = i + 1
-            while j < len(lis_dir) :
-                if lis_dir[i] == lis_dir[j][:len(lis_dir[i])] + '/' :
-                    del lis_dir[j]
-                elif lis_dir[i][:len(lis_dir[j])] + '/' == lis_dir[j] :
-                    del lis_dir[i]
-                j += 1
-            i += 1
-    else :
-        i = 0
-        while i < len(lis_dir) :
-            if lis_dir[i] == '.' or lis_dir[i] == './' :
-                lis_dir = lis_dir[:i + 1] + [elt for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
-            elif lis_dir[i][-1] == '/' :
-                lis_dir = lis_dir[:i + 1] + [os.path.join(lis_dir[i], elt) for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
-            elif lis_dir[i].startswith('./') :
-                lis_dir[i] = lis_dir[i][2:]
-            i += 1
-        i = 0
-        while i < len(lis_dir) :
-            j = i+1
-            while j < len(lis_dir) :
-                if lis_dir[i] == lis_dir[j] :
-                    del lis_dir[j]
-                j += 1
-            i += 1
-    return lis_dir
