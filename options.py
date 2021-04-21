@@ -37,9 +37,9 @@ def parser(args) :
                 raise Exception('Arguments invalide')
                 
 
-    return dic, norm_liste_dir(fichiers), destination
+    return dic, norm_liste_dir(fichiers, dic), destination
 
-def norm_liste_dir(lis_dir) :
+def norm_liste_dir(lis_dir, dic) :
     #On créé la liste complète (sauf avec -r) de fichiers à traiter en faisant gaffe aux doublons
     if dic['-r'] :
         i = 0
@@ -70,3 +70,4 @@ def norm_liste_dir(lis_dir) :
                     del lis_dir[j]
                 j += 1
             i += 1
+    return lis_dir

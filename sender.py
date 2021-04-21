@@ -5,7 +5,6 @@ def send_listonly(lis_dir,dic):
     cwd = os.getcwd()
     for elt in lis_dir:
         while cwd != os.path.abspath(elt)[:len(cwd)]:
-            print(os.path.abspath(elt)[:len(cwd)], cwd)
             cwd = os.path.split(cwd)[0]
 
     #On récupère la liste de fichier et tout ses éléments descripteurs
