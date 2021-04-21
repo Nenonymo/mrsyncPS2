@@ -1,26 +1,42 @@
 import os, sys, filelist, time, stat, message
 
 def send_listonly(lis_dir,dic):
-    #On exclu les fichiers traités plusieurs fois (peut-on faire plus simple ?)
+    #On créé la liste complète (sans -r) de fichiers à traiter en faisant gaffe aux doublons
     if dic['-r'] :
-        for i in range(len(lis_dir)) :
-            for j in range(i + 1, len(lis_dir)) :
+        i = 0
+        while i < len(lis_dir) :
+            j = i + 1
+            while j < len(lis_dir) :
                 if lis_dir[i] == lis_dir[j][:len(lis_dir[i])] + '/' :
                     del lis_dir[j]
                 elif lis_dir[i][:len(lis_dir[j])] + '/' == lis_dir[j] :
                     del lis_dir[i]
+                j += 1
+            i += 1
     else :
-        for i in range(len(lis_dir)) :
-            for j in range(i + 1, len(lis_dir)) :
-                if lis_dir[i] == os.path.split(lis_dir[j])[0] + '/' :
+        i = 0
+        while i < len(lis_dir) :
+            if lis_dir[i] == '.' or lis_dir[i] == './' :
+                lis_dir = lis_dir[:i + 1] + [elt for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
+            elif lis_dir[i][-1] == '/' :
+                lis_dir = lis_dir[:i + 1] + [os.path.join(lis_dir[i], elt) for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
+            elif lis_dir[i].startswith('./') :
+                lis_dir[i] = lis_dir[i][2:]
+            i += 1
+        i = 0
+        while i < len(lis_dir) :
+            j = i+1
+            while j < len(lis_dir) :
+                if lis_dir[i] == lis_dir[j] :
                     del lis_dir[j]
-                if os.path.split(lis_dir[i])[0] + '/' == lis_dir[j] :
-                    del lis_dir[i]
+                j += 1
+            i += 1
     
     #On cherche le dossier le plus englobant pour pouvoir faire le chemin relatif en partant de là
     cwd = os.getcwd()
     for elt in lis_dir:
         while cwd != os.path.abspath(elt)[:len(cwd)]:
+            print(os.path.abspath(elt)[:len(cwd)], cwd)
             cwd = os.path.split(cwd)[0]
 
     #On récupère la liste de fichier et tout ses éléments descripteurs

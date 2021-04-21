@@ -19,35 +19,10 @@ def parcours_rec(dir):
 
 def parcours(dir,dic): #fichiers caches compris
     file_list=[]
-    if dir.startswith('..'):
-        cwd = '/'.join(os.getcwd().split('/')[:-1])
-        try:
-            dir = os.path.join(cwd,dir[3:])
-        except:
-            dir = cwd
-    elif dir.startswith('.'):
-        try :
-            dir = os.path.join(os.getcwd(),dir[2:])
-        except :
-            dir = os.getcwd()
+    dir = os.path.abspath(dir)
+    if dic['-r'] and os.path.isdir(dir):
+        file_list = parcours_rec(dir)
     else :
-        dir = os.path.join(os.getcwd(),dir)
-    if os.path.isfile(dir) or os.path.islink(dir):
         st=os.stat(dir)
         file_list.append({'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-    elif dic['-r']:
-        curr_dir = os.listdir(dir)
-        for elt in curr_dir:
-            name = os.path.join(dir,elt)
-            st = os.stat(name)
-            if os.path.isfile(name):
-                file_list.append({'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-            else :
-                file_list=file_list+[{'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name)
-    else :
-        curr_dir = os.listdir(dir)
-        for elt in curr_dir:
-            name = os.path.join(dir,elt)
-            st=os.stat(name)
-            file_list.append({'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
