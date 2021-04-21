@@ -1,37 +1,6 @@
 import os, sys, filelist, time, stat, message
 
 def send_listonly(lis_dir,dic):
-    #On créé la liste complète (sans -r) de fichiers à traiter en faisant gaffe aux doublons
-    if dic['-r'] :
-        i = 0
-        while i < len(lis_dir) :
-            j = i + 1
-            while j < len(lis_dir) :
-                if lis_dir[i] == lis_dir[j][:len(lis_dir[i])] + '/' :
-                    del lis_dir[j]
-                elif lis_dir[i][:len(lis_dir[j])] + '/' == lis_dir[j] :
-                    del lis_dir[i]
-                j += 1
-            i += 1
-    else :
-        i = 0
-        while i < len(lis_dir) :
-            if lis_dir[i] == '.' or lis_dir[i] == './' :
-                lis_dir = lis_dir[:i + 1] + [elt for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
-            elif lis_dir[i][-1] == '/' :
-                lis_dir = lis_dir[:i + 1] + [os.path.join(lis_dir[i], elt) for elt in os.listdir(lis_dir[i])] + lis_dir[i + 1:]
-            elif lis_dir[i].startswith('./') :
-                lis_dir[i] = lis_dir[i][2:]
-            i += 1
-        i = 0
-        while i < len(lis_dir) :
-            j = i+1
-            while j < len(lis_dir) :
-                if lis_dir[i] == lis_dir[j] :
-                    del lis_dir[j]
-                j += 1
-            i += 1
-    
     #On cherche le dossier le plus englobant pour pouvoir faire le chemin relatif en partant de là
     cwd = os.getcwd()
     for elt in lis_dir:
@@ -49,6 +18,6 @@ def send_listonly(lis_dir,dic):
         print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name'][len(cwd) + 1:]))
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
-    file_list = filelist.parcours(dir,dic)
+    file_list = filelist.parcours(norm_liste_dir(dir),dic)
     message.envoit(sr_s,tag,file_list) #envoit la liste de fichier au receveur
     tag,data = message.recoit(gs_s) #recoit la liste de fichier a envoyer
