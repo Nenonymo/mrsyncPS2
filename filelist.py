@@ -79,4 +79,3 @@ def filelist(lis_dir,dic):
 
 #bug
 #affichage du nom absolu, j'ai du enlever le truc avec cwd provisoirement
-#cas de * non géré

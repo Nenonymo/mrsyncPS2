@@ -57,4 +57,8 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     for elt in file_list_receiver:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
-    message.envoit(gs_g,tag,send_list) #envoit la sendlist au sender
+    for elt in send_list:
+        message.envoit(gs_g,tag,send_list) #envoit la sendlist au sender
+
+
+#A faire : gérer les options perm et time

@@ -18,4 +18,9 @@ def send_listonly(lis_dir,dic):
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     file_list = filelist.filelist(dir,dic)
     message.envoit(sr_s,tag,file_list) #envoit la liste de fichier au receveur
-    tag,data = message.recoit(gs_s) #recoit la liste de fichier a envoyer
+
+    while True : #que mettre dans la condition ?
+        tag,data = message.recoit(gs_s) #recoit la liste de fichier a envoyer
+        #envoit les fichiers correspondant a receiver
+        #ouvre le fichier, le lit et l'envoie au receveur en plusieurs messages(+ gros que 16 Mo)
+        #tag = quel fichier il s'agit+tag data pour les messages contennant des bytearray+tagfin d'envoie
