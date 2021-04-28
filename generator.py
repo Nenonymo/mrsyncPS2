@@ -52,7 +52,8 @@ def delete_files(file_list_receiver,file_list_sender):
 
 def no_skip(file,file_list_receiver):
     for elt in file_list_receiver:
-        if elt['name'] == file['name'] :
+        print(elt['name_loc'],file['name_loc']) #pbm avec nom local de receiver
+        if elt['name_loc'] == file['name_loc'] :
             if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
                 return False
             elif os.path.isfile(elt['name']):
