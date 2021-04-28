@@ -77,5 +77,6 @@ def filelist(lis_dir,dic):
         file_list = file_list + parcours(dir,dic)
     return file_list
 
+#il faut rajouter le nom local?
 #bug
 #affichage du nom absolu, j'ai du enlever le truc avec cwd provisoirement

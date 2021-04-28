@@ -24,15 +24,15 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
         filename = os.path.abspath(tag2)
         tag2 += "d"
         #tester si un seul envoit necessaire mettre df
-        while tag2 =! "" :
+        while tag2 != "" :
             #data2 = os.read(filename,n)
             message.envoit(sr_s,tag2,data2)
             if tag2 == data+"d":
                 tag2 = data
-            if #dernier :
+            '''if #dernier :
                 tag2 += "f"
             elif tag2 == data+"f" or tag2 == data+"df":
-                tag2 = ""
+                tag2 = ""'''
 
 
         #envoit les fichiers correspondant a receiver
