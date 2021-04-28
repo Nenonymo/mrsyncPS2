@@ -7,10 +7,7 @@ def parcours_simple(dir,nom_loc):
     file_list=[]
     for elt in curr_dir:
         name = os.path.join(dir,elt)
-        if nom_loc.endswith('/'):
-            nom = nom_loc + elt
-        else :
-            nom = nom_loc +'/'+elt
+        nom = nom_loc +elt
         st = os.stat(name)
         file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
@@ -22,6 +19,8 @@ def parcours_rec(dir,nom_loc):
         name = os.path.join(dir,elt)
         if nom_loc.endswith('/'):
             nom = nom_loc+elt
+        elif nom_loc == '':
+            nom = elt
         else :
             nom=nom_loc+'/'+elt
         st = os.stat(name)
@@ -34,10 +33,12 @@ def parcours_rec(dir,nom_loc):
 def parcours(dir,nom_loc,dic): #fichiers caches compris
     file_list=[]
     if dic['-r'] :
-        if os.path.isdir(dir):
+        st = os.stat(dir)
+        if os.path.isdir(dir) and dir[-1]!='/':
+            file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc)
+        elif os.path.isdir(dir):
             file_list = parcours_rec(dir,nom_loc)
         else:
-            st = os.stat(dir)
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :
         if os.path.isdir(dir) and dir[-1]=='/':
@@ -63,7 +64,9 @@ def norm_liste_dir(lis_dir, dic) :
                     chemin.pop(0)
             lis_dir[i]="/".join([chemin_abs[-1]]+chemin)
         elif lis_dir[i].startswith('./'):
-            lis_dir[i]=os.getcwd().split("/")[-1]+lis_dir[i][1:]
+            lis_dir[i]=lis_dir[i][2:]
+        elif lis_dir[i] == './':
+            lis_dir[i]=''
         elif lis_dir[i]=='.':
             lis_dir[i]=os.getcwd().split("/")[-1]
         i += 1

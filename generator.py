@@ -41,7 +41,7 @@ def delete_files(file_list_receiver,file_list_sender):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
-            if elt['name'] == e['name']:  #pbm avec les noms absolus
+            if elt['name_loc'] == e['name_loc']:  #pbm avec les noms absolus
                 test = False
                 break
         if test:
@@ -79,4 +79,4 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
 
 #A faire : gérer les options perm et time
 #bug avec delete : noms absolus
-#pbm avec les noms absolus, comment gerer ca ?
+#pbm avec les noms absolus, comment gerer ca ? -> avec filelist
