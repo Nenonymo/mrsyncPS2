@@ -25,6 +25,7 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
         tag2 += "d"
         #tester si un seul envoit necessaire mettre df
         while tag2 =! "" :
+            #data2 = os.read(filename,n)
             message.envoit(sr_s,tag2,data2)
             if tag2 == data+"d":
                 tag2 = data

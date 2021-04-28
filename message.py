@@ -15,5 +15,6 @@ def envoit(fd,tag,v):
     if os.path.isfile(tag):
         file = open(tag)
         #envoit le contenu du fichier
-    elif tag == "liste":
-        #envoit la liste v
+    elif tag == "liste" or tag=="listef":
+        
+        #envoit le fichier v

@@ -61,7 +61,7 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
         tag = "liste"
         if i == len(send_list)-1:
             tag += "f"
-        message.envoit(gs_g,tag,send_list[i]) 
+        message.envoit(gs_g,tag,send_list[i])
         #envoit la sendlist au sender, envoyer les noms pas absolus
 
 
