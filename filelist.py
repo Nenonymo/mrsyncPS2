@@ -59,7 +59,7 @@ def norm_liste_dir(lis_dir, dic) :
         if lis_dir[i].startswith('..'):
             chemin_abs=os.getcwd().split("/")
             chemin = lis_dir[i].split("/")
-            while chemin[0] == '..':
+            while len(chemin) > 0 and chemin[0] == '..':
                     chemin_abs.pop()
                     chemin.pop(0)
             lis_dir[i]="/".join([chemin_abs[-1]]+chemin)

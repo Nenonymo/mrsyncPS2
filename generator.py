@@ -41,7 +41,7 @@ def delete_files(file_list_receiver,file_list_sender):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
-            if elt['name_loc'] == e['name_loc']:  #pbm avec les noms absolus
+            if elt['name_loc'].split("/")[-1] == e['name_loc'].split("/")[-1]:  #pbm avec les noms absolus
                 test = False
                 break
         if test:
@@ -52,8 +52,8 @@ def delete_files(file_list_receiver,file_list_sender):
 
 def no_skip(file,file_list_receiver):
     for elt in file_list_receiver:
-        print(elt['name_loc'],file['name_loc']) #pbm avec nom local de receiver
-        if elt['name_loc'] == file['name_loc'] :
+        #pbm avec nom local de receiver : pas forcement -1, commment faire ?
+        if elt['name_loc'].split("/")[-1] == file['name_loc'].split("/")[-1] :
             if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
                 return False
             elif os.path.isfile(elt['name']):
