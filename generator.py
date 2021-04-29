@@ -1,7 +1,4 @@
 import os, message
-    #si --delete : supprime les fic+rep de receiver pas dans sender
-
-    #on parcours file_list_sender et on retient les fichiers qui ne sont pas dans receiver
     #(modification time and size differs dans la plupart des cas)
     #si --checksum, a file-level checksum will be cerated and compared
     #on crée les repertoires et on ne skip pas les repertoires, symlink et device nodes
@@ -41,23 +38,25 @@ def delete_files(file_list_receiver,file_list_sender):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
-            if elt['name_loc'].split("/")[-1] == e['name_loc'].split("/")[-1]:
+            if elt['name_loc'] == e['name_loc']:
                 test = False
                 break
         if test:
             if os.path.isdir(elt['name']):
                 supprimer(elt['name'])
             else:
-                os.unlink(elt['name'])
+                try :
+                    os.unlink(elt['name'])
+                except :
+                    pass
 
 def no_skip(file,file_list_receiver):
     for elt in file_list_receiver:
-        #pbm avec nom local de receiver : pas forcement -1, commment faire ?
-        if elt['name_loc'].split("/")[-1] == file['name_loc'].split("/")[-1] :
+        if elt['name_loc'] == file['name_loc'] :
             if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
                 return False
             elif os.path.isfile(elt['name']):
-                if elt['size'] == file['size'] and elt['modtime'] == file['modtime']:
+                if elt['size'] == file['size'] and elt['modtime'] == file['modtime']: #modtime ??
                     return False
 #gestion des fichiers spéciaux (device node) ?
     return True
@@ -79,4 +78,3 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
 
 
 #A faire : gérer les options perm et time
-#pbm avec les nom locaux dans no_skip

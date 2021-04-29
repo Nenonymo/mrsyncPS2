@@ -54,11 +54,14 @@ def norm_liste_dir(lis_dir, dic) :
     while i < len(lis_dir) :
         if lis_dir[i][-1]=='/':
             lis_dir_abs.append(os.path.abspath(lis_dir[i])+'/')
+            lis_dir[i]=''
         else:
             lis_dir_abs.append(os.path.abspath(lis_dir[i]))
-        if lis_dir[i].startswith('..'):
-            chemin_abs=os.getcwd().split("/")
-            chemin = lis_dir[i].split("/")
+            lis_dir[i]=lis_dir[i].split("/")[-1]
+        '''if lis_dir[i].startswith('..'):
+            if lis_dir[i].endswith('/'):
+                chemin_abs=os.getcwd().split("/")
+                chemin = lis_dir[i].split("/")
             while len(chemin) > 0 and chemin[0] == '..':
                     chemin_abs.pop()
                     chemin.pop(0)
@@ -68,7 +71,7 @@ def norm_liste_dir(lis_dir, dic) :
         elif lis_dir[i] == './':
             lis_dir[i]=''
         elif lis_dir[i]=='.':
-            lis_dir[i]=os.getcwd().split("/")[-1]
+            lis_dir[i]=os.getcwd().split("/")[-1]'''
         i += 1
     i = 0
     while i < len(lis_dir) :
