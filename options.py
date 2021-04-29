@@ -18,7 +18,7 @@ def parser(args) :
         else :
             if '::' in i :
                 dic['--daemon'] = True
-            elif ':' in i :
+            elif ':' in i and not('::' in i):
                 dic['ssh'] = True
             fichiers += [i]
     if len(fichiers) == 0 :
