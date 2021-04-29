@@ -41,7 +41,7 @@ def delete_files(file_list_receiver,file_list_sender):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
-            if elt['name_loc'].split("/")[-1] == e['name_loc'].split("/")[-1]:  #pbm avec les noms absolus
+            if elt['name_loc'].split("/")[-1] == e['name_loc'].split("/")[-1]:
                 test = False
                 break
         if test:
