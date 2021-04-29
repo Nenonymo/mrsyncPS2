@@ -5,8 +5,9 @@ def send_listonly(lis_dir,dic):
     file_list = filelist.filelist(lis_dir,dic)
     
     #L'affichage
-    for elt in file_list:
-        print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
+    if not dic['-q'] :
+        for elt in file_list:
+            print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name']))#elt['name'][len(cwd) + 1:]))
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     file_list = filelist.filelist(dir,dic)
