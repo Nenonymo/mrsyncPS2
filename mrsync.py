@@ -3,8 +3,12 @@ import os, sys, options, sender, server
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
     
-    if dic['--list-only'] :
+    if dic['--list-only'] :    #gerer le liste only avec le ssh dans list only ou ssh ?
         sender.send_listonly(src, dic)
+    elif dic['ssh']:
+        print('ssh')
+    elif dic['--daemon']:
+        print('daemon') 
     else : #si local
         sr_r,sr_s = os.pipe()
         gs_s,gs_g = os.pipe()
