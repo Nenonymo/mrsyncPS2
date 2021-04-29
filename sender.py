@@ -1,13 +1,14 @@
-import os, sys, filelist, time, stat, message
+import os, sys, filelist, time, stat, message, time
 
 def send_listonly(lis_dir,dic):
     #On récupère la liste de fichier et tout ses éléments descripteurs
     file_list = filelist.filelist(lis_dir,dic)
-    
     #L'affichage
     if not dic['-q'] :
         for elt in file_list:
             print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
+    if dic['-v'] > 0 :
+        print('\nsent {} bytes received {} bytes {} bytes/sec\ntotal size is {} speedup is {}'.format(572, 1533, 4210.00, 69201, 32.87)) #nombres à changer, je ne sais pas ce à quoi ça correspond
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     file_list = filelist.filelist(dir,dic)

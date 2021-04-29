@@ -30,9 +30,9 @@ def parser(args) :
     else :
         destination = fichiers[-1]
         fichiers = fichiers[:-1]
-
+    
+    convert = {'--verbose':'-v','--quiet':'-q','--archive':'-a','--recursive':'-r','--update':'-u','--dirs':'-d','--hard-links':'-H','--perms':'-p','--times':'-t','--ignore-times':'-I','--help':'-h'}
     for i in arguments :
-        convert = {'--verbose':'-v','--quiet':'-q','--archive':'-a','--recursive':'-r','--update':'-u','--dirs':'-d','--hard-links':'-H','--perms':'-p','--times':'-t','--ignore-times':'-I','--help':'-h'}
         try :
             i = convert[i]
         except :
@@ -40,7 +40,10 @@ def parser(args) :
         if '=' in i :
             j = i.split('=')
             dic[j[0]] = j[1]
-        elif i == '-v' :
+        elif i == '-q' :
+            dic['-q'] = True
+            dic['-v'] = 0
+        elif i == '-v' and not dic['-q'] :
             if dic['-v'] >= 5 :
                 dic['-v'] = 5
             else :

@@ -84,10 +84,14 @@ def norm_liste_dir(lis_dir, dic) :
     return lis_dir_abs,lis_dir
 
 def filelist(lis_dir,dic):
+    if dic['-v'] > 0 :
+        print('building file list ... ', end='')
     file_list = []
     lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic)
     for i in range(len(lis_dir_abs)):
         file_list = file_list + parcours(lis_dir_abs[i],lis_dir[i],dic)
+    if dic['-v'] > 0 :
+        print('done')
     return file_list
 
 #on affiche le nom local, que faire quand plusieurs repertoires differents ? plus englobant ?
