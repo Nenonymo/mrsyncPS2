@@ -79,5 +79,4 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
 
 
 #A faire : gérer les options perm et time
-#bug avec delete : noms absolus
-#pbm avec les noms absolus, comment gerer ca ? -> avec filelist
+#pbm avec les nom locaux dans no_skip
