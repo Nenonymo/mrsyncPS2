@@ -41,7 +41,7 @@ def delete_files(file_list_receiver,file_list_sender):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
-            if elt['name'] == e['name']:  #pbm avec les noms absolus
+            if elt['name_loc'].split("/")[-1] == e['name_loc'].split("/")[-1]:
                 test = False
                 break
         if test:
@@ -52,7 +52,8 @@ def delete_files(file_list_receiver,file_list_sender):
 
 def no_skip(file,file_list_receiver):
     for elt in file_list_receiver:
-        if elt['name'] == file['name'] :
+        #pbm avec nom local de receiver : pas forcement -1, commment faire ?
+        if elt['name_loc'].split("/")[-1] == file['name_loc'].split("/")[-1] :
             if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
                 return False
             elif os.path.isfile(elt['name']):
@@ -79,4 +80,4 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
 
 #A faire : gérer les options perm et time
 #bug avec delete : noms absolus
-#pbm avec les noms absolus, comment gerer ca ?
+#pbm avec les noms absolus, comment gerer ca ? -> avec filelist
