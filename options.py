@@ -4,7 +4,7 @@ def parser(args) :
     args = args[1:]
     fichiers = []
     arguments = []
-    dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--times':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--ignore-times':False, '--size-only':False, '--adress':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, '--daemon':False, '--no-detach':False}
+    dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--size-only':False, '--adress':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, '--daemon':False, '--no-detach':False}
     
     if len(args) == 0 or (len(args) == 1 and args[0] == '-h') :
         show_help('mrsync.txt')
@@ -32,6 +32,11 @@ def parser(args) :
         fichiers = fichiers[:-1]
 
     for i in arguments :
+        convert = {'--verbose':'-v','--quiet':'-q','--archive':'-a','--recursive':'-r','--update':'-u','--dirs':'-d','--hard-links':'-H','--perms':'-p','--times':'-t','--ignore-times':'-I','--help':'-h'}
+        try :
+            i = convert[i]
+        except :
+            None
         if '=' in i :
             j = i.split('=')
             dic[j[0]] = j[1]
