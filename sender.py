@@ -12,11 +12,20 @@ def send_listonly(lis_dir,dic):
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     file_list = filelist.filelist(dir,dic)
-    message.envoit(sr_s,tag,file_list) #envoit la liste de fichier au receveur
-
-    while tag == "liste" : #s'arrete quand on recoit listef
-        tag,data = message.recoit(gs_s)
-        tag2 = data
+    sr = os.open(sr_s,os.O_WRONLY)
+    gs = os.open(gs_s,os.O_RDONLY)
+    nbr_file = len(file_list)
+    for i in range(nbr_file):
+        tag = [file_list[i]['name_loc'],'l',(i,nbr_file)]
+        message.envoit(sr,tag,file_list[i]) #envoit la liste de fichier au receveur
+    tag,data = message.recoit(gs)
+    nbr_file=tag[2][1]
+    tag_e = ['','l',(0,nbr_file)]
+    message.envoit(sr,tag_e)   #on envoit le nbr de fichiers a traiter
+    while tag[2][0] <= nbr_file : #si send_list est vide, on rentre pas dans la boucle
+        #traitement du premier message ici
+        tag,data = message.recoit(gs)
+        tag_e = [tag[0]]
         filename = os.path.abspath(tag2)
         tag2 += "d"
         #tester si un seul envoit necessaire mettre df

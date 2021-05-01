@@ -42,9 +42,7 @@ def envoit(fd,tag,v=''):
         None
     '''
 
-    if tag[1] == 'r' or tag[1] == 'l':
-        content = "{} {} {}_{}\n{}".format(tag[0], tag[1], tag[2][0], tag[2][1], tag[0])
-    elif tag[1] == 'f':
+    if tag[1] == 'r' or tag[1] == 'l' or tag[1] == 'f':
         content = "{} {} {}_{}\n{}".format(tag[0], tag[1], tag[2][0], tag[2][1], v)
     else:
         raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")

@@ -70,12 +70,12 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
             send_list.append(elt)
     fd = os.open(gs_g,os.O_WRONLY) #Append aussi ?
     nbr_file = len(send_list)
+    if nbr_file == 0:   #si send_list est vide
+        tag = ['','l',(0,0)]
+        message.envoit(fd,tag)
     for i in range(nbr_file):
         tag = [send_list[i]["name_loc"],"l",(i,nbr_file)]
-        message.envoit(fd,tag)
+        message.envoit(fd,tag,send_list[i])
     os.close(fd)
-        #message.envoit(gs_g,tag,send_list[i])
-        #envoit la sendlist au sender, envoyer les noms pas absolus
-
 
 #A faire : gérer les options perm et time
