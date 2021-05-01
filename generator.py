@@ -68,11 +68,12 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     for elt in file_list_sender:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
-    for i in range(len(send_list)):
-        tag = "liste"
-        if i == len(send_list)-1:
-            tag += "f"
-        print(tag,send_list[i]['name'])
+    fd = os.open(gs_g,os.O_WRONLY) #Append aussi ?
+    nbr_file = len(send_list)
+    for i in range(nbr_file):
+        tag = [send_list[i]["name_loc"],"l",(i,nbr_file)]
+        message.envoit(fd,tag)
+    os.close(fd)
         #message.envoit(gs_g,tag,send_list[i])
         #envoit la sendlist au sender, envoyer les noms pas absolus
 
