@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 test*
 pid
+comSize
 
 # C extensions
 *.so

@@ -3,11 +3,10 @@ import os
 une fonction de reception receive(fd) qui retourne tag et v recus
 des fonctions pour savoir si on affiche ou non qqchose (avec les options -v et -q)
 '''
-MAXBYTES = 10000 #provisoire
 
 class ModeError(Exception): pass
 
-def recoit(fd):
+def recoit(fd, lineFile="comSize"):
     '''reception et traitement d'un message
     
     Args:
@@ -17,7 +16,13 @@ def recoit(fd):
         tag (list): info about the file and the properties of the transmission (localName, cat, transmissionNumber)
         msg (string): content of the file'''
 
-    dataRaw = os.read(fd, MAXBYTES) #read the whole message
+    with open(lineFile, 'r') as f:
+        comSize = int(f.readline()[:-1])
+        print(comSize)
+
+    os.system('sed -i 1d {}'.format(lineFile))
+
+    dataRaw = os.read(fd, comSize) #read the whole message
     dataRaw = dataRaw.decode('utf-8')
     #Tag
     tagRaw = (dataRaw.split('\n')[0]) #Première ligne uniquement
@@ -25,12 +30,13 @@ def recoit(fd):
     tag = [tagRawL[0], tagRawL[1]] #localFileName and transmission category
     tag.append(tuple(map(int, tagRawL[2].split('_')))) #transmission num
     
+
     #Msg
     msg = (dataRaw[len(tagRaw)+1:]) #Everything but the first line
     
     return tag,msg
 
-def envoit(fd,tag,v=''):
+def envoit(fd,tag,lineFile="comSize",v=''):
     '''Wrtiting the message on the pipe
 
     Args:
@@ -46,6 +52,12 @@ def envoit(fd,tag,v=''):
         content = "{} {} {}_{}\n{}".format(tag[0], tag[1], tag[2][0], tag[2][1], v)
     else:
         raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")
+
+    with open(lineFile, 'a') as f: #ecriture de la longueur du write
+        f.write('{}\n'.format(len(content)+1))
+
     content = bytes(content,'utf-8')
     os.write(fd,content)
+
+
     return(0)
