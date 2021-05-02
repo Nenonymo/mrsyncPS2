@@ -44,13 +44,15 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
                 os.write(fd,data)
                 os.close(fd)
                 fd = os.open(chemin,os.O_WRONLY|os.O_APPEND)
-                j = tag[2][0]
+                j = tag[2][0]+1
+                print(j,data)
                 while j <= nbr_transmission:
                     tag,data = message.recoit(sr_r,lineFile='comSize2')
                     j = tag[2][0]
+                    print(j)
                     data = data.encode('utf-8')
                     os.write(fd,data)
-                fd.close()
+                os.close(fd)
 
             i+=1
         

@@ -21,6 +21,7 @@ def recoit(fd, lineFile="comSize"):
         while n == '':
             n = f.readline()[:-1]
         comSize = int(n)
+        print(comSize)
         '''n=f.read()
         while n == '':
             n=f.read()
@@ -61,6 +62,7 @@ def envoit(fd,tag,lineFile="comSize",v=''):
     content = bytes(content,'utf-8')
     with open(lineFile, 'a') as f: #ecriture de la longueur du write
         f.write('{}\n'.format(len(content)))
+        print(len(content))
 
     
     os.write(fd,content)

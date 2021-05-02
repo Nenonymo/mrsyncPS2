@@ -48,7 +48,9 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
             while j <= nbr_transmission :
                 msg = os.read(fd,taille_msg)
                 tag_e = [tag[0],'f',(j,nbr_transmission)]
+                print(msg)
                 message.envoit(sr_s,tag_e,v=msg,lineFile='comSize2')
+                j+=1
             #envoyer le contenu du fichier
             os.close(fd)
 
