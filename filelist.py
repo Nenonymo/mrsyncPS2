@@ -77,8 +77,9 @@ def norm_liste_dir(lis_dir, dic) :
     while i < len(lis_dir) :
         j = i+1
         while j < len(lis_dir) :
-            if lis_dir[i] == lis_dir[j] :
+            if lis_dir_abs[i] == lis_dir_abs[j] :
                 del lis_dir[j]
+                del lis_dir_abs[j]
             j += 1
         i += 1
     return lis_dir_abs,lis_dir

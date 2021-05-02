@@ -38,7 +38,10 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
             elif tag[1]=='f':
                 chemin = os.path.join(dirr,tag[0])
                 nbr_transmission = tag[2][1]
-                os.unlink(chemin)
+                try:
+                    os.unlink(chemin)
+                except:
+                    pass
                 fd = os.open(chemin,os.O_CREAT|os.O_WRONLY|os.O_APPEND)
                 j = tag[2][0]+1
                 while j <= nbr_transmission:
