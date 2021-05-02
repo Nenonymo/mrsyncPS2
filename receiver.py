@@ -1,14 +1,10 @@
 import os,filelist,message,generator,sys
 
-#brouillon
-
 def receive_local(dirs,dirr,dic,gs_g,sr_r):
     #creation de la liste de fichier du repertoire de destination
-    print(dirr)
     if dirr[-1] != '/':
         dirr = dirr + '/'
-    file_listr = filelist.filelist([dirr],dic) #pourquoi j'obtient la mauvaise liste de fichier ?
-    print(file_listr)
+    file_listr = filelist.filelist([dirr],dic)
 
     #reception de la liste de fichier du repertoire source
     file_lists=[]
@@ -44,13 +40,15 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
                 nbr_transmission = tag[2][1]
                 fd = os.open(chemin,os.O_CREAT|os.O_WRONLY)
                 tag,data = message.recoit(sr_r,lineFile='comSize2')
+                data = data.encode('utf-8')
                 os.write(fd,data)
-                fd.close()
+                os.close(fd)
                 fd = os.open(chemin,os.O_WRONLY|os.O_APPEND)
                 j = tag[2][0]
                 while j <= nbr_transmission:
                     tag,data = message.recoit(sr_r,lineFile='comSize2')
                     j = tag[2][0]
+                    data = data.encode('utf-8')
                     os.write(fd,data)
                 fd.close()
 

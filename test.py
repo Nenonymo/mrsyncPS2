@@ -10,5 +10,5 @@ if __name__ == '__main__' :
         if dest[-1] != '/':
             dest = dest + '/'
         destl = filelist.filelist([dest],dic)
-        gs_g=""
-        generator.generator_local(src,dest,srcl,destl,dic,gs_g)
+        print(srcl)
+        print(destl)
