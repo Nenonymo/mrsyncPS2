@@ -17,8 +17,15 @@ def recoit(fd, lineFile="comSize"):
         msg (string): content of the file'''
 
     with open(lineFile, 'r') as f:
-        comSize = int(f.readline()[:-1])
-        print(comSize)
+        n=f.readline()[:-1]
+        while n == '':
+            n = f.readline()[:-1]
+        comSize = int(n)
+        '''n=f.read()
+        while n == '':
+            n=f.read()
+        comSize=int(n.split("\n")[0])'''
+        print(comSize,'cc')
 
     os.system('sed -i 1d {}'.format(lineFile))
 
@@ -52,11 +59,12 @@ def envoit(fd,tag,lineFile="comSize",v=''):
         content = "{} {} {}_{}\n{}".format(tag[0], tag[1], tag[2][0], tag[2][1], v)
     else:
         raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")
-
-    with open(lineFile, 'a') as f: #ecriture de la longueur du write
-        f.write('{}\n'.format(len(content)+1))
-
     content = bytes(content,'utf-8')
+    with open(lineFile, 'a') as f: #ecriture de la longueur du write
+        f.write('{}\n'.format(len(content)))
+        print('envoit',len(content))
+
+    
     os.write(fd,content)
 
 

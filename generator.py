@@ -69,12 +69,18 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
     nbr_file = len(send_list)
+
+    #envoit de la liste des fichiers au sender
     if nbr_file == 0:   #si send_list est vide
         tag = ['','l',(0,0)]
         message.envoit(gs_g,tag)
     for i in range(nbr_file):
-        tag = [send_list[i]["name_loc"],"l",(i,nbr_file)]
+        tag = [send_list[i]["name_loc"],"l",(i+1,nbr_file)]
         message.envoit(gs_g,tag,send_list[i])
+    
+    #attente de la fin des fils et terminaison
+    os.wait()
+    os.wait()
     sys.exit(0)
 
 #A faire : gérer les options perm et time
