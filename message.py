@@ -25,7 +25,6 @@ def recoit(fd, lineFile="comSize"):
         while n == '':
             n=f.read()
         comSize=int(n.split("\n")[0])'''
-        print(comSize,'cc')
 
     os.system('sed -i 1d {}'.format(lineFile))
 
@@ -62,10 +61,23 @@ def envoit(fd,tag,lineFile="comSize",v=''):
     content = bytes(content,'utf-8')
     with open(lineFile, 'a') as f: #ecriture de la longueur du write
         f.write('{}\n'.format(len(content)))
-        print('envoit',len(content))
 
     
     os.write(fd,content)
 
-
     return(0)
+
+def str_to_dic(v):
+    v = v[1:-1].split(',')
+    d=dict()
+    for i in range(len(v)):
+        e = v[i].split(':')
+        if i == 0 :
+            d[e[0][1:-1]]=e[1][2:-1]
+        elif i == 1:
+            d[e[0][2:-1]]=e[1][2:-1]
+        elif i == len(v)-1:
+            d[e[0][2:-1]]=e[1][1:]
+        else :
+            d[e[0][2:-1]]=int(e[1][1:])
+    return d

@@ -1,4 +1,4 @@
-import os, sys, options, sender, server, pidManagement
+import os, sys, options, sender, server
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
@@ -17,8 +17,6 @@ if __name__ == '__main__' :
         gs_s,gs_g = os.pipe()
         pid=os.fork()
         if pid != 0 : #pere, server
-            pidManagement.appToFile('pid', 'ge:{}'.format(os.getpid()))
             server.server_local(src,dest,dic,gs_g,sr_r)
         else : #fils, sender
-            pidManagement.appToFile('pid', 'se:{}'.format(os.getpid())) #enregistrement du pid
             sender.send_local(src,dic,gs_s,sr_s)

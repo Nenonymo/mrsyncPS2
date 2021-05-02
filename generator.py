@@ -50,13 +50,13 @@ def delete_files(file_list_receiver,file_list_sender):
                 except :
                     pass
 
-def no_skip(file,file_list_receiver):
+def no_skip(fichier,file_list_receiver):
     for elt in file_list_receiver:
-        if elt['name_loc'] == file['name_loc'] :
+        if elt['name_loc'] == fichier['name_loc'] :
             if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
                 return False
             elif os.path.isfile(elt['name']):
-                if elt['size'] == file['size'] and elt['modtime'] == file['modtime']: #modtime ??
+                if elt['size'] == fichier['size'] and elt['modtime'] == fichier['modtime']: #modtime ??
                     return False
 #gestion des fichiers spéciaux (device node) ?
     return True
@@ -69,14 +69,14 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
     nbr_file = len(send_list)
-
     #envoit de la liste des fichiers au sender
     if nbr_file == 0:   #si send_list est vide
+        print("hello")
         tag = ['','l',(0,0)]
-        message.envoit(gs_g,tag)
+        message.envoit(gs_g,tag,lineFile='comSize1')
     for i in range(nbr_file):
         tag = [send_list[i]["name_loc"],"l",(i+1,nbr_file)]
-        message.envoit(gs_g,tag,send_list[i])
+        message.envoit(gs_g,tag,v=send_list[i],lineFile='comSize1')
     
     #attente de la fin des fils et terminaison
     os.wait()
