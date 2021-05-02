@@ -38,18 +38,12 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
             elif tag[1]=='f':
                 chemin = os.path.join(dirr,tag[0])
                 nbr_transmission = tag[2][1]
-                fd = os.open(chemin,os.O_CREAT|os.O_WRONLY)
-                tag,data = message.recoit(sr_r,lineFile='comSize2')
-                data = data.encode('utf-8')
-                os.write(fd,data)
-                os.close(fd)
-                fd = os.open(chemin,os.O_WRONLY|os.O_APPEND)
+                os.unlink(chemin)
+                fd = os.open(chemin,os.O_CREAT|os.O_WRONLY|os.O_APPEND)
                 j = tag[2][0]+1
-                print(j,data)
                 while j <= nbr_transmission:
                     tag,data = message.recoit(sr_r,lineFile='comSize2')
-                    j = tag[2][0]
-                    print(j)
+                    j +=1
                     data = data.encode('utf-8')
                     os.write(fd,data)
                 os.close(fd)
