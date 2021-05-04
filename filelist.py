@@ -14,7 +14,7 @@ def parcours_simple(dir,nom_loc,verbose):
             print('file add : {}'.format(nom))
     return file_list
 
-def parcours_rec(dir,nom_loc):
+def parcours_rec(dir,nom_loc,verbose):
     curr_dir = os.listdir(dir)
     file_list=[]
     for elt in curr_dir:
@@ -25,9 +25,11 @@ def parcours_rec(dir,nom_loc):
             nom = elt
         else :
             nom=nom_loc+'/'+elt
+        if verbose > 2 :
+            print('file add : {}'.format(nom))
         st = os.stat(name)
         if os.path.isdir(name):
-            file_list = file_list+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom)
+            file_list = file_list+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose)
         else:
             file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
@@ -39,7 +41,7 @@ def parcours(dir,nom_loc,dic): #fichiers caches compris
         if os.path.isdir(dir) and dir[-1]!='/':
             file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc)
         elif os.path.isdir(dir):
-            file_list = parcours_rec(dir,nom_loc)
+            file_list = parcours_rec(dir,nom_loc,dic['-v'])
         else:
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :

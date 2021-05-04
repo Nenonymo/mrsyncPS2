@@ -69,7 +69,7 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
 
 def sender_daemon(dirs,dic,r,w,clisock,servsock):
     envoit_list_sender(dir,dic,w)
-    envoit_fichier(r,###)
+    envoit_fichier(r,'###')
 
 #autres types de fichiers ???
         
