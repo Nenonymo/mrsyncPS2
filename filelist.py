@@ -2,7 +2,7 @@ import os
 
 #si --checksum ajouter the file checksums
 
-def parcours_simple(dir,nom_loc):
+def parcours_simple(dir,nom_loc,verbose):
     curr_dir = os.listdir(dir)
     file_list=[]
     for elt in curr_dir:
@@ -10,6 +10,8 @@ def parcours_simple(dir,nom_loc):
         nom = nom_loc +elt
         st = os.stat(name)
         file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+        if verbose > 2 :
+            print('file add : {}'.format(nom))
     return file_list
 
 def parcours_rec(dir,nom_loc):
@@ -42,7 +44,7 @@ def parcours(dir,nom_loc,dic): #fichiers caches compris
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :
         if os.path.isdir(dir) and dir[-1]=='/':
-            file_list = parcours_simple(dir,nom_loc)
+            file_list = parcours_simple(dir,nom_loc,dic['-v'])
         else :
             st=os.stat(dir)
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
@@ -86,7 +88,7 @@ def norm_liste_dir(lis_dir, dic) :
 
 def filelist(lis_dir,dic):
     if dic['-v'] > 0 :
-        print('building file list ... ', end='')
+        print('building file list ... ', end=('' if dic['-v'] < 3 else '\n'))
     file_list = []
     lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic)
     for i in range(len(lis_dir_abs)):
@@ -96,3 +98,4 @@ def filelist(lis_dir,dic):
     return file_list
 
 #on affiche le nom local, que faire quand plusieurs repertoires differents ? plus englobant ?
+#le list-only dossier/ n'affiche pas le .

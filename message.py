@@ -80,3 +80,16 @@ def str_to_dic(v):
         else :
             d[e[0][2:-1]]=int(e[1][1:])
     return d
+
+'''
+Traceback (most recent call last):
+  File "mrsyncPS2/mrsync.py", line 22, in <module>
+    server.server_local(src,dest,dic,gs_g,sr_r)
+  File "/home/gargaranza/Systeme2/mrsyncPS2/server.py", line 5, in server_local
+    receiver.receive_local(dirs,dirr,dic,gs_g,sr_r)
+  File "/home/gargaranza/Systeme2/mrsyncPS2/receiver.py", line 14, in receive_local
+    file_lists.append(message.str_to_dic(data))
+  File "/home/gargaranza/Systeme2/mrsyncPS2/message.py", line 79, in str_to_dic
+    d[e[0][2:-1]]=e[1][1:]
+IndexError: list index out of range
+'''
