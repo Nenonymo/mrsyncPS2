@@ -13,6 +13,10 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
         tag,data = message.recoit(sr_r,lineFile='comSize2')
         file_lists.append(message.str_to_dic(data))
 
+    if dic['daemonserveur']:
+        generator.generator_local(dirs,dirr,file_lists,file_listr,gs_g)
+        sys.exit()
+
     #creation du generateur
     pid=os.fork()
     if pid != 0: #père, générateur

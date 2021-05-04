@@ -23,8 +23,7 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     tag,data = message.recoit(gs_s,lineFile='comSize1')
     data = message.str_to_dic(data)
     nbr_file=tag[2][1]
-    tag_e = ['c',
-    'l',(0,nbr_file)]
+    tag_e = ['c','l',(0,nbr_file)]
     message.envoit(sr_s,tag_e,lineFile='comSize2')   #on envoit le nbr de fichiers a traiter
     i=1
 

@@ -34,7 +34,7 @@ def supprimer(rep):
     os.rmdir(rep)
 
 
-def delete_files(file_list_receiver,file_list_sender):
+def delete_files(file_list_sender,file_list_receiver):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
@@ -61,26 +61,52 @@ def no_skip(fichier,file_list_receiver):
 #gestion des fichiers spéciaux (device node) ?
     return True
 
-def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
-    if dic["--delete"]:
-        delete_files(file_list_receiver,file_list_sender)
+def creation_deletelist(file_list_sender,file_list_receiver):
+    delete_list=[]
+    for elt in file_list_receiver:
+        test = True
+        for e in file_list_sender:
+            if elt['name_loc'] == e['name_loc']:
+                test = False
+                break
+        if test:
+                delete_list.append(elt)
+    return delete_list,len(delete_list)
+
+def creation_sendlist(file_list_sender,file_list_receiver):
     send_list=[]
     for elt in file_list_sender:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
-    nbr_file = len(send_list)
-    #envoit de la liste des fichiers au sender
-    if nbr_file == 0:   #si send_list est vide
-        print("hello")
+    return send_list,len(send_list)
+
+def envoyer_liste(liste,nbr_file,fd):
+    if nbr_file == 0:   #si liste est vide
         tag = ['','l',(0,0)]
-        message.envoit(gs_g,tag,lineFile='comSize1')
+        message.envoit(fd,tag,lineFile='comSize1')
     for i in range(nbr_file):
-        tag = [send_list[i]["name_loc"],"l",(i+1,nbr_file)]
-        message.envoit(gs_g,tag,v=send_list[i],lineFile='comSize1')
-    
+        tag = [liste[i]["name_loc"],"l",(i+1,nbr_file)]
+        message.envoit(fd,tag,v=liste[i],lineFile='comSize1')
+
+def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
+    if dic["--delete"]:
+        delete_files(file_list_sender,file_list_receiver)
+    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver)
+    #envoit de la liste des fichiers au sender
+    envoyer_liste(send_list,nbr_file,gs_g)
     #attente de la fin des fils et terminaison
     os.wait()
     os.wait()
     sys.exit(0)
+
+def generator_daemon(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
+    delete_list =[]
+    nbr_delete=0
+    if dic["--delete"]:
+        delete_list,nbr_delete=creation_deletelist(file_list_sender,file_list_receiver)
+    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver)
+    #envoit de la liste de fichier au sender
+    envoyer_liste(delete_list,nbr_delete,gs_g)
+    envoyer_liste(send_list,nbr_file,gs_g)
 
 #A faire : gérer les options perm et time
