@@ -93,3 +93,6 @@ Traceback (most recent call last):
     d[e[0][2:-1]]=e[1][1:]
 IndexError: list index out of range
 '''
+'''pour les comSize : il faut definir la taille au prealable, l'envoyer en
+premier sur un nombre défini d'octet puis receptionner le paquet
+la taille codée sur combien d'octets ?'''

@@ -10,15 +10,16 @@ def send_listonly(lis_dir,dic):
     if dic['-v'] > 0 :
         print('\nsent {} bytes received {} bytes {} bytes/sec\ntotal size is {} speedup is {}'.format(572, 1533, 4210.00, 69201, 32.87)) #nombres à changer, je ne sais pas ce à quoi ça correspond
 
-def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
+def envoit_list_sender(dir,dic,w):
     #creation de la liste des fichiers sources + envoit au receiver
     file_list = filelist.filelist(dir,dic)
     nbr_file = len(file_list)
 
     for i in range(nbr_file):
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
-        message.envoit(sr_s,tag,v=file_list[i],lineFile='comSize2')
+        message.envoit(w,tag,v=file_list[i],lineFile='comSize2')
 
+def envoit_fichier(gs_g,sr_s,dic):
     #reception de la liste de fichier du generateur + envoit des fichiers au receiver
     tag,data = message.recoit(gs_s,lineFile='comSize1')
     data = message.str_to_dic(data)
@@ -30,6 +31,9 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     while i <= nbr_file : #si send_list est vide, on rentre pas dans la boucle
         if os.path.isdir(data['name']):  #repertoire
             tag_e = [tag[0],'r',(1,1)]
+            if dic["daemonserveur"]:
+                message.envoitdaemon(sr_s,tag_e,v=data,lineFile='comSize2')
+                #comment faire pour les tailles ???
             message.envoit(sr_s,tag_e,v=data,lineFile='comSize2')
         elif os.path.islink(data['name']): #lien symbolique
             tag_e = [tag[0],'s',(1,1)]
@@ -56,10 +60,16 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
         if i <= nbr_file:
             tag,data = message.recoit(gs_s,lineFile='comSize1') #prochain fichier a traiter
             data = message.str_to_dic(data)
-    
+
+def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
+    envoit_list_sender(dir,dic,sr_s)
+    envoit_fichier(gs_g,sr_s)    
     #terminaison
     sys.exit(0)
 
+def sender_daemon(dirs,dic,r,w,clisock,servsock):
+    envoit_list_sender(dir,dic,w)
+    envoit_fichier(r,###)
 
 #autres types de fichiers ???
         
