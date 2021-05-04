@@ -80,3 +80,7 @@ def str_to_dic(v):
         else :
             d[e[0][2:-1]]=int(e[1][1:])
     return d
+
+'''pour les comSize : il faut definir la taille au prealable, l'envoyer en
+premier sur un nombre défini d'octet puis receptionner le paquet
+la taille codée sur combien d'octets ?'''
