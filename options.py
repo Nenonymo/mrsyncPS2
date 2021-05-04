@@ -5,13 +5,9 @@ def parser(args) :
     fichiers = []
     arguments = []
     dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--size-only':False, '--adress':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, '--daemon':False, '--no-detach':False}
-    
-    if len(args) == 0 or (len(args) == 1 and args[0] == '-h') :
+    if len(args) == 0 or '-h' in args or '--help' in args :
         show_help('mrsync.txt')
-        sys.exit()
-    elif '--daemon' in args and '-h' in args :
-        show_help('mrsync_daemon.txt')
-    
+        sys.exit(0)
     for i in args :
         if i[0] == '-' :
             arguments += [i]
@@ -21,9 +17,11 @@ def parser(args) :
             elif ':' in i and not('::' in i):
                 dic['ssh'] = True
             fichiers += [i]
-    if len(fichiers) == 0 :
+    if len(fichiers) == 0 and not '--daemon' in args :
         show_help('mrsync.txt')
         raise Exception('Pas de fichier')
+    elif len(fichiers) == 0 and '--daemon' in args : 
+        dic['daemonserveur']= True
     elif len(fichiers) == 1 :
         destination = '.'
         dic['--list-only'] = True
@@ -64,3 +62,4 @@ def show_help(fileName) :
     for i in file :
         print(i, end='')
     print()
+    file.close()

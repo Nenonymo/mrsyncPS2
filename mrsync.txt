@@ -506,5 +506,6 @@ AUTHORS
        This mrsync has been written by :
             Adeline Alaux (L2 Maths-Info)
             Némo Chentre (L2 Info)
+            Valentin Massebeuf (L2 Maths-Info)
             
                                   L2 info math-info 2021              mrsync(1)

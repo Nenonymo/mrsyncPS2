@@ -12,6 +12,8 @@ if __name__ == '__main__' :
         print('ssh')
     elif dic['--daemon']:
         print('daemon') 
+    elif dic['daemonserveur']:
+        server.server_daemon(dic)
     else : #si local
         sr_r,sr_s = os.pipe()
         gs_s,gs_g = os.pipe()
