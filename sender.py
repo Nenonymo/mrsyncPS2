@@ -19,7 +19,7 @@ def envoit_list_sender(dir,dic,w):
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
         message.envoit(w,tag,v=file_list[i],lineFile='comSize2')
 
-def envoit_fichier(gs_g,sr_s,dic):
+def envoit_fichier(gs_s,sr_s,dic):
     #reception de la liste de fichier du generateur + envoit des fichiers au receiver
     tag,data = message.recoit(gs_s,lineFile='comSize1')
     data = message.str_to_dic(data)
@@ -63,7 +63,7 @@ def envoit_fichier(gs_g,sr_s,dic):
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     envoit_list_sender(dir,dic,sr_s)
-    envoit_fichier(gs_g,sr_s)    
+    envoit_fichier(gs_s,sr_s,dic)    
     #terminaison
     sys.exit(0)
 

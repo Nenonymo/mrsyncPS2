@@ -16,17 +16,19 @@ def recoit(fd, lineFile="comSize"):
         tag (list): info about the file and the properties of the transmission (localName, cat, transmissionNumber)
         msg (string): content of the file'''
 
-    with open(lineFile, 'r') as f:
+    '''with open(lineFile, 'r') as f:
         n=f.readline()[:-1]
         while n == '':
             n = f.readline()[:-1]
         comSize = int(n)
-        '''n=f.read()
-        while n == '':
-            n=f.read()
-        comSize=int(n.split("\n")[0])'''
+        
 
-    os.system('sed -i 1d {}'.format(lineFile))
+    os.system('sed -i 1d {}'.format(lineFile))'''
+
+    taille = os.read(fd,50)
+    taille = taille.decode('utf-8')
+    comSize = taille.split('r')[0]
+    comSize = int(comSize)
 
     dataRaw = os.read(fd, comSize) #read the whole message
     dataRaw = dataRaw.decode('utf-8')
@@ -59,9 +61,13 @@ def envoit(fd,tag,lineFile="comSize",v=''):
     else:
         raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")
     content = bytes(content,'utf-8')
-    with open(lineFile, 'a') as f: #ecriture de la longueur du write
-        f.write('{}\n'.format(len(content)))
-    
+    '''with open(lineFile, 'a') as f: #ecriture de la longueur du write
+        f.write('{}\n'.format(len(content)))'''
+    nbr = str(len(content))
+    clp = 50 - len(nbr)
+    nbr = (nbr + clp*"r").encode('utf-8')
+    os.write(fd,nbr)
+    #os.lseek(fd,1,os.SEEK_CUR)
     os.write(fd,content)
 
     return(0)
@@ -81,18 +87,5 @@ def str_to_dic(v):
             d[e[0][2:-1]]=int(e[1][1:])
     return d
 
-'''
-Traceback (most recent call last):
-  File "mrsyncPS2/mrsync.py", line 22, in <module>
-    server.server_local(src,dest,dic,gs_g,sr_r)
-  File "/home/gargaranza/Systeme2/mrsyncPS2/server.py", line 5, in server_local
-    receiver.receive_local(dirs,dirr,dic,gs_g,sr_r)
-  File "/home/gargaranza/Systeme2/mrsyncPS2/receiver.py", line 14, in receive_local
-    file_lists.append(message.str_to_dic(data))
-  File "/home/gargaranza/Systeme2/mrsyncPS2/message.py", line 79, in str_to_dic
-    d[e[0][2:-1]]=e[1][1:]
-IndexError: list index out of range
-'''
-'''pour les comSize : il faut definir la taille au prealable, l'envoyer en
-premier sur un nombre défini d'octet puis receptionner le paquet
-la taille codée sur combien d'octets ?'''
+
+#pour les comSize : quelle taille choisir ??
