@@ -34,7 +34,7 @@ utilisee dans la fonction parcours si il y'a l'option -r
 input : dir = nom absolu du repertoire parcouru (string)
         nom_loc = nom local du repertoire dir (string)
         verbose = niveau de verbose (int) 
-        whoami =
+        whoami = role du processus (string)
 ouput : file_list = liste des fichiers dans dir (liste de fichiers)
 '''
 def parcours_rec(dir,nom_loc,verbose,whoami):
@@ -66,7 +66,7 @@ utilisee par la fonction principale filelist
 input : dir = fichier ou repertoire a ajouter a file_list, chemin absolu (string)
         nom_loc = nom local de dir (string)
         dic = dictionnaire des options (dictionnaire)
-        whoami =
+        whoami = role du processus (string)
 ouput : file_list = liste des fichiers du repertoire dir (liste de fichier)
 '''
 def parcours(dir,nom_loc,dic,whoami):
@@ -137,7 +137,7 @@ utilisee par sender_local et sender_listonly dans sender.py et receiver_local da
 
 input : lis_dir = liste des noms de fichiers ou repertoires a traiter (liste de string)
         dic = dictionnaire des options (dictionnaire)
-        whoami =
+        whoami = role du processus (string)
 ouput : file_list = liste des fichiers de chaque element de lis_dir (liste de fichiers)
 '''
 def filelist(lis_dir,dic,whoami):
