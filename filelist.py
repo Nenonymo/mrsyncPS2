@@ -133,7 +133,7 @@ def norm_liste_dir(lis_dir) :
 
 '''cree la liste de fichiers file_list qui contient les fichiers de chaque nom de repertoire/fichier de lis_dir
 
-utilisee par sender_local dans sender.py et receiver_local dans receiver.py
+utilisee par sender_local et sender_listonly dans sender.py et receiver_local dans receiver.py
 
 input : lis_dir = liste des noms de fichiers ou repertoires a traiter (liste de string)
         dic = dictionnaire des options (dictionnaire)
