@@ -23,14 +23,14 @@ def sort_receiver(dir):
                 dir[i]=dir[j]
                 dir[j]=tmp'''
 
- '''supprime un repertoire et
+'''supprime un repertoire et
  tous les fichiers qui se trouvent dedans
  
  utilisée dans delete_files lorsque l'option --delete est activée
  
  input : rep = un nom de répertoire absolu (string)
  ouput : rien
- '''
+'''
 def supprimer(rep):
     cur_dir=os.listdir(rep)
     for elt in cur_dir:
@@ -114,6 +114,7 @@ def creation_sendlist(file_list_sender,file_list_receiver):
     for elt in file_list_sender:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
+    print(send_list)
     return send_list,len(send_list)
 
 '''envoit fichier par fichier la liste de fichiers liste au sender
