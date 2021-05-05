@@ -20,13 +20,11 @@ def envoit_list_sender(dir,dic,w):
         print('{} files to send'.format(nbr_file))
 
     for i in range(nbr_file):
-        if dic['-v'] > 2:
-            print('sending : {}'.format(file_list[i]['name_loc']))
+        if dic['-v'] > 3:
+            print('add file \'{}\' to send'.format(file_list[i]['name_loc']))
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
         message.envoit(w,tag,v=file_list[i],lineFile='comSize2')
     
-    if dic['-v'] :
-        print('files sent')
 
 def envoit_fichier(gs_s,sr_s,dic):
     #reception de la liste de fichier du generateur + envoit des fichiers au receiver
@@ -42,6 +40,8 @@ def envoit_fichier(gs_s,sr_s,dic):
     i=1
 
     while i <= nbr_file : #si send_list est vide, on rentre pas dans la boucle
+        if dic['-v'] > 2 :
+            print('sending file \'{}\' ... '.format(data['name_loc']), end='')
         if os.path.isdir(data['name']):  #repertoire
             tag_e = [tag[0],'r',(1,1)]
             if dic["daemonserveur"]:
@@ -68,15 +68,19 @@ def envoit_fichier(gs_s,sr_s,dic):
                 j+=1
             #envoyer le contenu du fichier
             os.close(fd)
-
+        if dic['-v'] > 2 :
+            print('done')
         i += 1
         if i <= nbr_file:
             tag,data = message.recoit(gs_s,lineFile='comSize1') #prochain fichier a traiter
             data = message.str_to_dic(data)
+    
+    if dic['-v'] > 3 :
+        print('done')
 
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     envoit_list_sender(dir,dic,sr_s)
-    envoit_fichier(gs_s,sr_s,dic)    
+    envoit_fichier(gs_s,sr_s,dic)
     #terminaison
     sys.exit(0)
 
