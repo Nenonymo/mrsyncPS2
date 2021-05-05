@@ -1,7 +1,19 @@
 import os
 
 #si --checksum ajouter the file checksums
+'''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier file_list
+ne s'occupe que d'une seule couche
 
+utilisee dans la fonction parcours si il n'y a pas l'option -r
+
+input : dir = nom absolu du repertoire parcouru (string)
+        nom_loc = nom local du repertoire dir (string)
+        verbose = niveau de verbose (int)
+        whoami =
+ouput : file_list = liste des fichiers dans dir (liste de fichiers)
+un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
+        {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
+'''
 def parcours_simple(dir,nom_loc,verbose,whoami):
     curr_dir = os.listdir(dir)
     file_list=[]
@@ -14,6 +26,17 @@ def parcours_simple(dir,nom_loc,verbose,whoami):
             print('[{}][parcours simple] file add : {}'.format(whoami,nom))
     return file_list
 
+'''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier file_list
+parcours recursivement le repertoire dir pour ajouter tous les fichiers de toutes les couches
+
+utilisee dans la fonction parcours si il y'a l'option -r
+
+input : dir = nom absolu du repertoire parcouru (string)
+        nom_loc = nom local du repertoire dir (string)
+        verbose = niveau de verbose (int) 
+        whoami =
+ouput : file_list = liste des fichiers dans dir (liste de fichiers)
+'''
 def parcours_rec(dir,nom_loc,verbose,whoami):
     curr_dir = os.listdir(dir)
     file_list=[]
@@ -34,7 +57,19 @@ def parcours_rec(dir,nom_loc,verbose,whoami):
             file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
 
-def parcours(dir,nom_loc,dic,whoami): #fichiers caches compris
+'''ajoute le fichier dir a la liste de fichier file_list
+si dir est un repertoire, appelle les fonctions de parcours de repertoire pour ajouter (recursivement ou non)
+les fichiers a l'interieur de dir
+
+utilisee par la fonction principale filelist
+
+input : dir = fichier ou repertoire a ajouter a file_list, chemin absolu (string)
+        nom_loc = nom local de dir (string)
+        dic = dictionnaire des options (dictionnaire)
+        whoami =
+ouput : file_list = liste des fichiers du repertoire dir (liste de fichier)
+'''
+def parcours(dir,nom_loc,dic,whoami):
     file_list=[]
     if dic['-r'] :
         st = os.stat(dir)
@@ -52,7 +87,15 @@ def parcours(dir,nom_loc,dic,whoami): #fichiers caches compris
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
 
-def norm_liste_dir(lis_dir, dic) :
+'''donne le nom absolu et le nom local qui sera utilisé (ie '') des fichiers et repertoires de list_dir
+
+utilisee par la fonction principale filelist
+
+input : lis_dir = liste des noms des fichiers et repertoires a traiter (liste de string)
+ouput : lis_dir_abs = liste des noms absolus des fichiers et repertoires (liste de string)
+        lis_dir = liste des noms locaux ('') des fichiers et repertoires (liste de string)
+'''
+def norm_liste_dir(lis_dir) :
     lis_dir_abs=[]
     i = 0
     while i < len(lis_dir) :
@@ -88,11 +131,20 @@ def norm_liste_dir(lis_dir, dic) :
         i += 1
     return lis_dir_abs,lis_dir
 
+'''cree la liste de fichiers file_list qui contient les fichiers de chaque nom de repertoire/fichier de lis_dir
+
+utilisee par sender_local dans sender.py et receiver_local dans receiver.py
+
+input : lis_dir = liste des noms de fichiers ou repertoires a traiter (liste de string)
+        dic = dictionnaire des options (dictionnaire)
+        whoami =
+ouput : file_list = liste des fichiers de chaque element de lis_dir (liste de fichiers)
+'''
 def filelist(lis_dir,dic,whoami):
     if dic['-v'] :
         print('building file list {} ... '.format(whoami), end=('' if dic['-v'] < 2 else '\n'))
     file_list = []
-    lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic)
+    lis_dir_abs,lis_dir = norm_liste_dir(lis_dir)
     if dic['-v'] > 1 :
         print('list {} normalized'.format(whoami))
     for i in range(len(lis_dir_abs)):
