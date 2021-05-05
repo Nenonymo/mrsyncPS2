@@ -6,7 +6,7 @@ utilisee dans la fonction principale receiver
 
 input : dirr = repertoire destination, chemin absolu (string)
         dic = dictionnaire des options (dictionnaire)
-ouput : file_listr = liste de fichier destination (liste de fichier)
+output : file_listr = liste de fichier destination (liste de fichier)
         un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
         {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
 '''
@@ -37,7 +37,7 @@ utilisee dans la fonction principale receiver
 
 input : dirr = repertoire de destination, chemin absolu (string)
         d = descripteur de fichier de l'endroit ou on recoit les fichiers (descripteur de fichier, int)
-ouput : rien
+output : rien
 '''
 def reception_fichiers(dirr,d,verbose):
     if verbose :
@@ -88,6 +88,7 @@ input : dirs = repertoires sources, chemins absolus (liste de string)
         dic = dictionnaire des options (dictionnaire)
         gs_g = descripteur de fichier du generateur, pipe generateur vers sender (descripteur de fichier, int)
         sr_r = descripteur de fichier du receiver, pipe sender vers receiver (descripteur de fichier, int)
+output : rien
 '''
 def receive_local(dirs,dirr,dic,gs_g,sr_r):
     #creation de la liste de fichier du repertoire de destination
