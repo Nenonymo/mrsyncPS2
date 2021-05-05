@@ -4,7 +4,7 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
     #creation de la liste de fichier du repertoire de destination
     if dirr[-1] != '/':
         dirr = dirr + '/'
-    file_listr = filelist.filelist([dirr],dic)
+    file_listr = filelist.filelist([dirr],dic,'receiver')
 
     #reception de la liste de fichier du repertoire source
     file_lists=[]

@@ -2,7 +2,7 @@ import os
 
 #si --checksum ajouter the file checksums
 
-def parcours_simple(dir,nom_loc,verbose):
+def parcours_simple(dir,nom_loc,verbose,whoami):
     curr_dir = os.listdir(dir)
     file_list=[]
     for elt in curr_dir:
@@ -11,10 +11,10 @@ def parcours_simple(dir,nom_loc,verbose):
         st = os.stat(name)
         file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
         if verbose > 2 :
-            print('file add : {}'.format(nom))
+            print('[{}][parcours simple] file add : {}'.format(whoami,nom))
     return file_list
 
-def parcours_rec(dir,nom_loc,verbose):
+def parcours_rec(dir,nom_loc,verbose,whoami):
     curr_dir = os.listdir(dir)
     file_list=[]
     for elt in curr_dir:
@@ -26,27 +26,27 @@ def parcours_rec(dir,nom_loc,verbose):
         else :
             nom=nom_loc+'/'+elt
         if verbose > 2 :
-            print('file add : {}'.format(nom))
+            print('[{}][parcours recursif] file add : {}'.format(whoami,nom))
         st = os.stat(name)
         if os.path.isdir(name):
-            file_list = file_list+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose)
+            file_list = file_list+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose,whoami)
         else:
             file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
 
-def parcours(dir,nom_loc,dic): #fichiers caches compris
+def parcours(dir,nom_loc,dic,whoami): #fichiers caches compris
     file_list=[]
     if dic['-r'] :
         st = os.stat(dir)
         if os.path.isdir(dir) and dir[-1]!='/':
-            file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc)
+            file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc,whoami)
         elif os.path.isdir(dir):
-            file_list = parcours_rec(dir,nom_loc,dic['-v'])
+            file_list = parcours_rec(dir,nom_loc,dic['-v'],whoami)
         else:
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :
         if os.path.isdir(dir) and dir[-1]=='/':
-            file_list = parcours_simple(dir,nom_loc,dic['-v'])
+            file_list = parcours_simple(dir,nom_loc,dic['-v'],whoami)
         else :
             st=os.stat(dir)
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
@@ -88,15 +88,17 @@ def norm_liste_dir(lis_dir, dic) :
         i += 1
     return lis_dir_abs,lis_dir
 
-def filelist(lis_dir,dic):
-    if dic['-v'] > 0 :
-        print('building file list ... ', end=('' if dic['-v'] < 3 else '\n'))
+def filelist(lis_dir,dic,whoami):
+    if dic['-v'] :
+        print('building file list {} ... '.format(whoami), end=('' if dic['-v'] < 3 else '\n'))
     file_list = []
     lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic)
+    if dic['-v'] > 2 :
+        print('list {} normalized'.format(whoami))
     for i in range(len(lis_dir_abs)):
-        file_list = file_list + parcours(lis_dir_abs[i],lis_dir[i],dic)
-    if dic['-v'] > 0 :
-        print('done')
+        file_list = file_list + parcours(lis_dir_abs[i],lis_dir[i],dic,whoami)
+    if dic['-v'] :
+        print('{}done'.format('' if dic['-v'] < 3 else whoami + ' '))
     return file_list
 
 #on affiche le nom local, que faire quand plusieurs repertoires differents ? plus englobant ?

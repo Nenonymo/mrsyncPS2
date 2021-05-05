@@ -2,22 +2,31 @@ import os, sys, filelist, time, stat, message
 
 def send_listonly(lis_dir,dic):
     #On récupère la liste de fichier et tout ses éléments descripteurs
-    file_list = filelist.filelist(lis_dir,dic)
+    file_list = filelist.filelist(lis_dir,dic,'list-only')
     #L'affichage
     if not dic['-q'] :
+        taille_tot = 0
         for elt in file_list:
+            taille_tot += elt['size']
             print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
-    if dic['-v'] > 0 :
-        print('\nsent {} bytes received {} bytes {} bytes/sec\ntotal size is {} speedup is {}'.format(572, 1533, 4210.00, 69201, 32.87)) #nombres à changer, je ne sais pas ce à quoi ça correspond
+    if dic['-v'] :
+        print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
 
 def envoit_list_sender(dir,dic,w):
     #creation de la liste des fichiers sources + envoit au receiver
-    file_list = filelist.filelist(dir,dic)
+    file_list = filelist.filelist(dir,dic,'sender')
     nbr_file = len(file_list)
+    if dic['-v'] :
+        print('{} files to send'.format(nbr_file))
 
     for i in range(nbr_file):
+        if dic['-v'] > 2:
+            print('sending : {}'.format(file_list[i]['name_loc']))
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
         message.envoit(w,tag,v=file_list[i],lineFile='comSize2')
+    
+    if dic['-v'] :
+        print('files sent')
 
 def envoit_fichier(gs_s,sr_s,dic):
     #reception de la liste de fichier du generateur + envoit des fichiers au receiver
