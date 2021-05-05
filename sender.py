@@ -1,5 +1,13 @@
 import os, sys, filelist, time, stat, message
 
+'''recupere la liste de fichier file_list en utilisant filelist.py et affiche tous les fichiers de cette liste
+
+utilisee dans mrsync.py
+
+input : lis_dir = liste des noms de fichiers a traiter (liste de string)
+        dic = dictionnaire des options (dictionnaire)
+output : rien
+'''
 def send_listonly(lis_dir,dic):
     #On récupère la liste de fichier et tout ses éléments descripteurs
     file_list = filelist.filelist(lis_dir,dic,'list-only')
@@ -12,6 +20,15 @@ def send_listonly(lis_dir,dic):
     if dic['-v'] :
         print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
 
+'''cree la liste de fichiers et l'envoit sur le descripteur w fichier par fichier
+
+utilisee dans la fonction principale send_local
+
+input : dir = liste des noms de fichiers/repertoires a traiter (liste de string)
+        dic = dictionnaire des options (dictionnaire)
+        w = descripteur de fichier de l'endroit ou on envoit la liste (descripteur de fichier,int)
+output : rien
+'''
 def envoit_list_sender(dir,dic,w):
     #creation de la liste des fichiers sources + envoit au receiver
     file_list = filelist.filelist(dir,dic,'sender')
@@ -21,7 +38,15 @@ def envoit_list_sender(dir,dic,w):
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
         message.envoit(w,tag,v=file_list[i],lineFile='comSize2')
     
+'''recoit la liste de fichiers du generateur et envoit les fichiers et leur contenu au receiver
 
+utilisee dans la fonction principale send_local
+
+input : gs_g = descripteur de fichier cote sender, generateur vers sender (descripteur de fichier, int)
+        sr_s = descripteur de fichier cote sender, sender vers receiver (descripteur de fichier, int)
+        dic = dictionnaire des options (dictionnaire)
+output : rien
+'''
 def envoit_fichier(gs_s,sr_s,dic):
     if dic['-v'] :
         print('sending files ...', end=' ' if dic['-v'] < 2 else '\n')
@@ -76,12 +101,24 @@ def envoit_fichier(gs_s,sr_s,dic):
     if dic['-v'] :
         print('done', end='\n' if dic['-v'] < 2 else ' sending files\n')
 
+'''gere la partie sender du mode local
+
+utilisee dans mrsync.py
+
+input : dir = liste des noms de fichiers a traiter (liste de string)
+        dic = dictionnaire des options (dictionnaire)
+        gs_s = descripteur de fichier cote sender, generateur vers sender (descripteur de fichiers, int)
+        sr_s = descripteur de fichier cote sender, sender vers receiver (descripteur de fichiers, int)
+output : rien
+'''
 def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     envoit_list_sender(dir,dic,sr_s)
     envoit_fichier(gs_s,sr_s,dic)
     #terminaison
     sys.exit(0)
 
+'''gere le cote sender dans le mode daemon
+'''
 def sender_daemon(dirs,dic,r,w,clisock,servsock):
     envoit_list_sender(dir,dic,w)
     envoit_fichier(r,'###')
