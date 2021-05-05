@@ -114,7 +114,6 @@ def creation_sendlist(file_list_sender,file_list_receiver):
     for elt in file_list_sender:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
-    print(send_list)
     return send_list,len(send_list)
 
 '''envoit fichier par fichier la liste de fichiers liste au sender
