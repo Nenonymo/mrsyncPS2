@@ -72,6 +72,16 @@ def reception_fichiers(dirr,d):
                 os.close(fd)
             i+=1
 
+'''fonction principale du receiver en mode local
+
+utilisee par server.server_local, dans server.py
+
+input : dirs = repertoires sources, chemins absolus (liste de string)
+        dirr = repertoire destination, chemin absolu (string)
+        dic = dictionnaire des options (dictionnaire)
+        gs_g = descripteur de fichier du generateur, pipe generateur vers sender (descripteur de fichier, int)
+        sr_r = descripteur de fichier du receiver, pipe sender vers receiver (descripteur de fichier, int)
+'''
 def receive_local(dirs,dirr,dic,gs_g,sr_r):
     #creation de la liste de fichier du repertoire de destination
     file_listr = creation_filelist_receiver(dirr,dic)
