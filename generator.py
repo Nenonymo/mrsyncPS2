@@ -29,7 +29,7 @@ def sort_receiver(dir):
  utilisée dans delete_files lorsque l'option --delete est activée
  
  input : rep = un nom de répertoire absolu (string)
- ouput : rien
+ output : rien
 '''
 def supprimer(rep,len_rep,verbose):
     cur_dir=os.listdir(rep)
@@ -52,7 +52,7 @@ input : file_list_sender = la liste des fichiers source (liste de fichiers)
         file_list_receiver = la liste des fichiers de destination (qui se trouvent dans le répertoire de destination) (liste de fichiers)
         un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
         {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
-ouput : rien
+output : rien
 '''
 def delete_files(file_list_sender,file_list_receiver,verbose):
     for elt in file_list_receiver:
@@ -80,7 +80,7 @@ utilisee dans la fonction creation_sendlist
 
 input : fichier = le fichier a tester (fichier)
         file_list_receiver = la liste des fichiers de destination (liste de fichiers)
-ouput : Vrai si le fichier doit etre envoyé, Faux sinon (booleen)
+output : Vrai si le fichier doit etre envoyé, Faux sinon (booleen)
 '''
 def no_skip(fichier,file_list_receiver):
     for elt in file_list_receiver:
@@ -113,7 +113,7 @@ utilisee dans la fonction principale generator
 
 input : file_list_sender = liste de fichiers sources (liste de fichiers)
         file_list_receiver = liste de fichiers destination (liste de fichiers)
-ouput : send_list = liste de fichiers à envoyer (liste de fichier)
+output : send_list = liste de fichiers à envoyer (liste de fichier)
         len(send_list) = taille de send_list (int)
 '''
 def creation_sendlist(file_list_sender,file_list_receiver,verbose):
@@ -132,7 +132,7 @@ utilisee dans la fonction principale generator
 input : liste = la liste des fichiers à envoyer (liste de fichiers)
         nbr_file = le nombre de fichiers à envoyer = taille de liste (int)
         fd = le descripteur de fichier de l'endroit ou on envoit les fichiers (descripteur de fichier, int)
-ouput : rien
+output : rien
 '''
 def envoyer_liste(liste,nbr_file,fd):
     if nbr_file == 0:   #si liste est vide
@@ -152,7 +152,7 @@ input : dirs = repertoires source (liste de string)
         file_list_receiver = liste de fichiers destination (liste de fichiers)
         dic = dictionnaire des options (dictionnaire)
         gs_g = descripteur de fichier du pipe generateur vers sender (descripteur de fichier, int)
-ouput : rien
+output : rien
 '''
 def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     if dic["--delete"]:
