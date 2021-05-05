@@ -41,36 +41,36 @@ ouput : rien
 '''
 def reception_fichiers(dirr,d):
     tag,data = message.recoit(d,lineFile='comSize2')
-        nbr_file = tag[2][1]
-        i = 1
-        while i <= nbr_file:
-            tag,data = message.recoit(d,lineFile='comSize2')
-            data = message.str_to_dic(data)
-            #repertoire
-            if tag[1]=='r':
-                chemin = os.path.join(dirr,tag[0])
-                os.mkdir(chemin,data['mode'])
-            #lien symbolique
-            elif tag[1]=='s':
-                chemin=os.path.join(dirr,tag[0])
-                os.symlink(data['name'],chemin)
-            #fichier
-            elif tag[1]=='f':
-                chemin = os.path.join(dirr,tag[0])
-                nbr_transmission = tag[2][1]
-                try:
-                    os.unlink(chemin)
-                except:
-                    pass
-                fd = os.open(chemin,os.O_CREAT|os.O_WRONLY|os.O_APPEND)
-                j = tag[2][0]+1
-                while j <= nbr_transmission:
-                    tag,data = message.recoit(d,lineFile='comSize2')
-                    j +=1
-                    data = data.encode('utf-8')
-                    os.write(fd,data)
-                os.close(fd)
-            i+=1
+    nbr_file = tag[2][1]
+    i = 1
+    while i <= nbr_file:
+        tag,data = message.recoit(d,lineFile='comSize2')
+        data = message.str_to_dic(data)
+        #repertoire
+        if tag[1]=='r':
+            chemin = os.path.join(dirr,tag[0])
+            os.mkdir(chemin,data['mode'])
+        #lien symbolique
+        elif tag[1]=='s':
+            chemin=os.path.join(dirr,tag[0])
+            os.symlink(data['name'],chemin)
+        #fichier
+        elif tag[1]=='f':
+            chemin = os.path.join(dirr,tag[0])
+            nbr_transmission = tag[2][1]
+            try:
+                os.unlink(chemin)
+            except:
+                pass
+            fd = os.open(chemin,os.O_CREAT|os.O_WRONLY|os.O_APPEND)
+            j = tag[2][0]+1
+            while j <= nbr_transmission:
+                tag,data = message.recoit(d,lineFile='comSize2')
+                j +=1
+                data = data.encode('utf-8')
+                os.write(fd,data)
+            os.close(fd)
+        i+=1
 
 '''fonction principale du receiver en mode local
 
