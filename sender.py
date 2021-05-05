@@ -31,10 +31,14 @@ def envoit_list_sender(dir,dic,w):
 def envoit_fichier(gs_s,sr_s,dic):
     #reception de la liste de fichier du generateur + envoit des fichiers au receiver
     tag,data = message.recoit(gs_s,lineFile='comSize1')
-    data = message.str_to_dic(data)
-    nbr_file=tag[2][1]
-    tag_e = ['c','l',(0,nbr_file)]
-    message.envoit(sr_s,tag_e,lineFile='comSize2')   #on envoit le nbr de fichiers a traiter
+    if tag[2][1]==0:
+        nbr_file = 0
+        message.envoit(sr_s,tag)
+    else :
+        data = message.str_to_dic(data)
+        nbr_file=tag[2][1]
+        tag_e = ['c','l',(0,nbr_file)]
+        message.envoit(sr_s,tag_e,lineFile='comSize2')   #on envoit le nbr de fichiers a traiter
     i=1
 
     while i <= nbr_file : #si send_list est vide, on rentre pas dans la boucle
