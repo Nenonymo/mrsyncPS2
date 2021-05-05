@@ -7,20 +7,20 @@ if __name__ == '__main__' :
         os.remove("pid")
     
     if dic['--list-only'] :    #gerer le liste only avec le ssh dans list only ou ssh ?
-        if dic['-v'] > 2 :
+        if dic['-v'] > 1 :
             print('mode list-only')
         sender.send_listonly(src, dic)
     elif dic['ssh']:
-        if dic['-v'] > 2 :
+        if dic['-v'] > 1 :
             print('mode ssh')
         print('ssh')
     elif dic['--daemon']:
-        if dic['-v'] > 2 :
+        if dic['-v'] > 1 :
             print('mode daemon')
     elif dic['daemonserveur']:
         server.server_daemon(dic)
     else : #si local
-        if dic['-v'] > 2 :
+        if dic['-v'] > 1 :
             print('mode local')
         sr_r,sr_s = os.pipe()
         gs_s,gs_g = os.pipe()

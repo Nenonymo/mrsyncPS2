@@ -39,7 +39,9 @@ input : dirr = repertoire de destination, chemin absolu (string)
         d = descripteur de fichier de l'endroit ou on recoit les fichiers (descripteur de fichier, int)
 ouput : rien
 '''
-def reception_fichiers(dirr,d):
+def reception_fichiers(dirr,d,verbose):
+    if verbose :
+        print('receiving files ...', end=' ' if verbose < 2 else '\n')
     tag,data = message.recoit(d,lineFile='comSize2')
     nbr_file = tag[2][1]
     i = 1
@@ -70,7 +72,12 @@ def reception_fichiers(dirr,d):
                 data = data.encode('utf-8')
                 os.write(fd,data)
             os.close(fd)
+        if verbose > 1 :
+            print('\'{}\' received'.format(tag[0]))
         i+=1
+
+    if verbose :
+        print('done', end='\n' if verbose < 2 else ' receiving files\n')
 
 '''fonction principale du receiver en mode local
 
@@ -95,6 +102,6 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
     if pid != 0: #père, générateur
         generator.generator_local(dirs,dirr,file_lists,file_listr,dic,gs_g)
     else: #fils, receiver, reception des fichiers
-        reception_fichiers(dirr,sr_r)
+        reception_fichiers(dirr,sr_r,dic['-v'])
         #terminaison
         sys.exit(0)

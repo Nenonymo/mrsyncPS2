@@ -42,8 +42,8 @@ def parser(args) :
             dic['-q'] = True
             dic['-v'] = 0
         elif i == '-v' and not dic['-q'] :
-            if dic['-v'] >= 5 :
-                dic['-v'] = 5
+            if dic['-v'] >= 3 :
+                dic['-v'] = 3
             else :
                 dic['-v'] += 1
         else :

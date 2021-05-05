@@ -10,7 +10,7 @@ def parcours_simple(dir,nom_loc,verbose,whoami):
         nom = nom_loc +elt
         st = os.stat(name)
         file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-        if verbose > 2 :
+        if verbose > 1 :
             print('[{}][parcours simple] file add : {}'.format(whoami,nom))
     return file_list
 
@@ -25,7 +25,7 @@ def parcours_rec(dir,nom_loc,verbose,whoami):
             nom = elt
         else :
             nom=nom_loc+'/'+elt
-        if verbose > 2 :
+        if verbose > 1 :
             print('[{}][parcours recursif] file add : {}'.format(whoami,nom))
         st = os.stat(name)
         if os.path.isdir(name):
@@ -90,15 +90,15 @@ def norm_liste_dir(lis_dir, dic) :
 
 def filelist(lis_dir,dic,whoami):
     if dic['-v'] :
-        print('building file list {} ... '.format(whoami), end=('' if dic['-v'] < 3 else '\n'))
+        print('building file list {} ... '.format(whoami), end=('' if dic['-v'] < 2 else '\n'))
     file_list = []
     lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic)
-    if dic['-v'] > 2 :
+    if dic['-v'] > 1 :
         print('list {} normalized'.format(whoami))
     for i in range(len(lis_dir_abs)):
         file_list = file_list + parcours(lis_dir_abs[i],lis_dir[i],dic,whoami)
     if dic['-v'] :
-        print('{}done'.format('' if dic['-v'] < 3 else whoami + ' '))
+        print('{}done'.format('' if dic['-v'] < 2 else 'building file list {} '.format(whoami)))
     return file_list
 
 #on affiche le nom local, que faire quand plusieurs repertoires differents ? plus englobant ?

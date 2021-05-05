@@ -31,15 +31,18 @@ def sort_receiver(dir):
  input : rep = un nom de répertoire absolu (string)
  ouput : rien
 '''
-def supprimer(rep):
+def supprimer(rep,len_rep,verbose):
     cur_dir=os.listdir(rep)
     for elt in cur_dir:
         elt = os.path.join(rep,elt)
         if os.path.isdir(elt):
-            supprimer(elt)
+            supprimer(elt,len_rep,verbose)
         else:
+            if verbose > 1 :
+                print('{} deleted'.format(elt[len_rep:]))
             os.unlink(elt)
     os.rmdir(rep)
+
 
 '''supprime les fichiers et répertoires qui sont dans file_list_receiver et pas dans file_list_sender
 
@@ -51,7 +54,7 @@ input : file_list_sender = la liste des fichiers source (liste de fichiers)
         {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
 ouput : rien
 '''
-def delete_files(file_list_sender,file_list_receiver):
+def delete_files(file_list_sender,file_list_receiver,verbose):
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
@@ -60,10 +63,14 @@ def delete_files(file_list_sender,file_list_receiver):
                 break
         if test:
             if os.path.isdir(elt['name']):
-                supprimer(elt['name'])
+                supprimer(elt['name'],len(elt['name'])+1,verbose)
+                if verbose > 1 :
+                    print('{} deleted'.format(elt['name_loc']))
             else:
                 try :
                     os.unlink(elt['name'])
+                    if verbose > 1 :
+                        print('{} deleted'.format(elt['name_loc']))
                 except :
                     pass
 
@@ -109,11 +116,13 @@ input : file_list_sender = liste de fichiers sources (liste de fichiers)
 ouput : send_list = liste de fichiers à envoyer (liste de fichier)
         len(send_list) = taille de send_list (int)
 '''
-def creation_sendlist(file_list_sender,file_list_receiver):
+def creation_sendlist(file_list_sender,file_list_receiver,verbose):
     send_list=[]
     for elt in file_list_sender:
         if no_skip(elt,file_list_receiver):
             send_list.append(elt)
+        elif verbose > 1:
+            print('{} skipped'.format(elt['name_loc']))
     return send_list,len(send_list)
 
 '''envoit fichier par fichier la liste de fichiers liste au sender
@@ -147,8 +156,16 @@ ouput : rien
 '''
 def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     if dic["--delete"]:
-        delete_files(file_list_sender,file_list_receiver)
-    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver)
+        if dic['-v'] :
+            print('deleting files ...',end=' ' if dic['-v'] < 2 else '\n')
+        delete_files(file_list_sender,file_list_receiver,dic['-v'])
+        if dic['-v'] :
+            print('done',end='\n' if dic['-v'] < 2 else ' deleting files\n')
+    if dic['-v'] :
+        print('creation sendlist ...',end=' ' if dic['-v'] < 2 else '\n')
+    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver,dic['-v'])
+    if dic['-v'] :
+        print('done' if dic['-v'] < 2 else 'sendlist created')
     #envoit de la liste des fichiers au sender
     envoyer_liste(send_list,nbr_file,gs_g)
     #attente de la fin des fils et terminaison
