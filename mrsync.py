@@ -10,15 +10,24 @@ if __name__ == '__main__' :
         if dic['-v'] > 1 :
             print('mode list-only')
         sender.send_listonly(src, dic)
+
     elif dic['ssh']:
         if dic['-v'] > 1 :
             print('mode ssh')
         print('ssh')
+
     elif dic['--daemon']:
+
+        #séparation CMD
+        #Démarrage en mode démon
+        
+        #gestion détacher du file puis appel dans les deux cas du elif en dessous
+        server.server_daemon(dic)
+
+    elif dic['daemon']:
         if dic['-v'] > 1 :
             print('mode daemon')
-    elif dic['daemonserveur']:
-        server.server_daemon(dic)
+
     else : #si local
         if dic['-v'] > 1 :
             print('mode local')

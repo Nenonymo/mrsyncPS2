@@ -4,7 +4,8 @@ def parser(args) :
     args = args[1:]
     fichiers = []
     arguments = []
-    dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--size-only':False, '--adress':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, '--daemon':False, '--no-detach':False, 'daemonserveur':False, '--server':False}
+    destination = ''
+    dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--size-only':False, '--adress':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, 'daemon':False, '--no-detach':False, '--daemon':False, '--server':False}
     if len(args) == 0 or '-h' in args or '--help' in args :
         show_help('mrsync.txt')
         sys.exit(0)
@@ -13,12 +14,12 @@ def parser(args) :
             arguments += [i]
         else :
             if '::' in i :
-                dic['--daemon'] = True
+                dic['daemon'] = True
             elif ':' in i :
                 dic['ssh'] = True
             fichiers += [i]
-    if len(fichiers) == 0 and '--daemon' in args : 
-        dic['daemonserveur'] = True
+    if '--daemon' in args : 
+        dic['--daemon'] = True
     elif len(fichiers) == 0 :
         show_help('mrsync.txt')
         raise Exception('Pas de fichier')
