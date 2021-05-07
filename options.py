@@ -1,19 +1,24 @@
 import os, sys
 
 def parser(args) :
+    ''' parser
+    input : args = liste des arguments entrés brut (string list)
+    output : dic = dictionnaire des options (dictionnaire)
+             fichiers = liste des fichiers sources (string list)
+             destination = dossier de destination (string)
+    '''
     args = args[1:]
     fichiers = []
     destination = ''
-    #le dictionnaire de tous les arguments possibles
     dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--size-only':False, '--address':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, 'daemon':False, '--no-detach':False, '--daemon':False, '--server':False}
-    if len(args) == 0 : #si on entre aucun argument, on montre l'aide et arrête le programme
+    if len(args) == 0 :
         show_help()
         sys.exit(0)
     for i in range(len(args)) :
-        if args[i][0] == '-' :        #si c'est un argument
+        if args[i][0] == '-' :
             try : dic = argument_management(args[i],args[i+1])
             except : dic = argument_management(args[i],args[i])
-        else :                        #si c'est un fichier
+        else :
             if '::' in args[i] :
                 dic['daemon'] = True
             elif ':' in args[i] :
@@ -26,7 +31,7 @@ def parser(args) :
     elif len(fichiers) == 1 :
         destination = '.'
         dic['--list-only'] = True
-    else :                           #le dernier fichier entré est la destination
+    else :
         destination = fichiers[-1]
         fichiers = fichiers[:-1]
     
@@ -38,13 +43,20 @@ def parser(args) :
     return dic, fichiers, destination
 
 def show_help() :
+    '''Affiche l'aide depuis 'mrsync.txt' '''
     file = open('mrsync.txt', 'r')
     for i in file :
         print(i, end='')
     print()
     file.close()
 
-def argument_management(dic, elt, elt_next) :  #on actualise dic et fait les changements relatifs aux arguments
+def argument_management(dic, elt, elt_next) :
+    '''actualise dic et fait les changements relatifs aux arguments
+    input : dic = dictionnaire des options (dictionnaire)
+            elt = ième élément de argv (string)
+            elt_next = (i+1)ème élément de argv (string)
+    output : dic = dictionnaire des options (dictionnaire)
+    '''
     convert = {'--verbose':'-v','--quiet':'-q','--archive':'-a','--recursive':'-r','--update':'-u','--dirs':'-d','--hard-links':'-H','--perms':'-p','--times':'-t','--ignore-times':'-I','--help':'-h'}
     try : elt = convert[elt]
     except : None
