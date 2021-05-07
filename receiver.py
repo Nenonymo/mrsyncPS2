@@ -37,16 +37,24 @@ utilisee dans la fonction principale receiver
 
 input : dirr = repertoire de destination, chemin absolu (string)
         d = descripteur de fichier de l'endroit ou on recoit les fichiers (descripteur de fichier, int)
+            ou socket server si mode daemon pull (socket)
+        dic = dictionnaire d'options
 output : rien
 '''
-def reception_fichiers(dirr,d,verbose):
-    if verbose :
-        print('receiving files ...', end=' ' if verbose < 2 else '\n')
-    tag,data = message.recoit(d,lineFile='comSize2')
+def reception_fichiers(dirr,d,dic):
+    if dic['-v'] > 0 :
+        print('receiving files ...', end=' ' if dic['-v'] < 2 else '\n')
+    if dic['daemon'] and dic['pull']:
+        tag,data = message.recoit_socket(d)
+    else :
+        tag,data = message.recoit(d)
     nbr_file = tag[2][1]
     i = 1
     while i <= nbr_file:
-        tag,data = message.recoit(d,lineFile='comSize2')
+        if dic['daemon'] and dic['pull']:
+            tag,data = message.recoit_socket(d)
+        else :
+            tag,data = message.recoit(d)
         data = message.str_to_dic(data)
         #repertoire
         if tag[1]=='r':
@@ -67,42 +75,65 @@ def reception_fichiers(dirr,d,verbose):
             fd = os.open(chemin,os.O_CREAT|os.O_WRONLY|os.O_APPEND)
             j = tag[2][0]+1
             while j <= nbr_transmission:
-                tag,data = message.recoit(d,lineFile='comSize2')
+                if dic['daemon'] and dic['pull']:
+                    tag,data = message.recoit_socket(d)
+                else :
+                    tag,data = message.recoit(d)
                 j +=1
                 data = data.encode('utf-8')
                 os.write(fd,data)
             os.close(fd)
-        if verbose > 1 :
+        if dic['-v'] > 1 :
             print('\'{}\' received'.format(tag[0]))
         i+=1
 
-    if verbose :
-        print('done', end='\n' if verbose < 2 else ' receiving files\n')
+    if dic['-v']>0 :
+        print('done', end='\n' if dic['-v'] < 2 else ' receiving files\n')
 
-'''fonction principale du receiver en mode local
 
-utilisee par server.server_local, dans server.py
+def receive_local(dirr,dic,gs_g,sr_r):
+    '''fonction principale du receiver en mode local
 
-input : dirs = repertoires sources, chemins absolus (liste de string)
-        dirr = repertoire destination, chemin absolu (string)
-        dic = dictionnaire des options (dictionnaire)
-        gs_g = descripteur de fichier du generateur, pipe generateur vers sender (descripteur de fichier, int)
-        sr_r = descripteur de fichier du receiver, pipe sender vers receiver (descripteur de fichier, int)
-output : rien
-'''
-def receive_local(dirs,dirr,dic,gs_g,sr_r):
+    utilisee par server.server_local, dans server.py
+
+    input : dirr = repertoire destination, chemin absolu (string)
+            dic = dictionnaire des options (dictionnaire)
+            gs_g = descripteur de fichier du generateur, pipe generateur vers sender (descripteur de fichier, int)
+            sr_r = descripteur de fichier du receiver, pipe sender vers receiver (descripteur de fichier, int)
+    output : rien
+    '''
     #creation de la liste de fichier du repertoire de destination
     file_listr = creation_filelist_receiver(dirr,dic)
     #reception de la liste de fichier du repertoire source
     file_lists=reception_filelist_sender(sr_r)
-    if dic['daemonserveur']:
-        generator.generator_local(dirs,dirr,file_lists,file_listr,gs_g)
-        sys.exit()
     #creation du generateur
     pid=os.fork()
     if pid != 0: #père, générateur
         generator.generator_local(file_lists,file_listr,dic,gs_g)
     else: #fils, receiver, reception des fichiers
-        reception_fichiers(dirr,sr_r,dic['-v'])
+        reception_fichiers(dirr,sr_r,dic)
         #terminaison
         sys.exit(0)
+
+
+def receive_daemon(dst,dic,soc):
+    if dic['pull']: #cote client
+        if dic['--list-only']:
+            #On récupère la liste de fichier et tout ses éléments descripteurs
+            taille_tot = 0
+            tag,data = message.recoit(d)
+            nbr_file = tag[2][1]
+            i = 1
+            while i <= nbr_file:
+                tag,data = message.recoit_socket(soc)
+                data = message.str_to_dic(data)
+                taille_tot += data['size']
+                if not dic['-q'] :
+                    print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
+                i+=1
+            if dic['-v']>0 and not dic['-q'] ::
+                print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
+        else :
+            reception_fichiers(dst,soc,dic)
+        sys.exit(0)
+    elif dic['push']:#cote server

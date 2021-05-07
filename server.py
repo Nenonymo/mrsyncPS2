@@ -1,8 +1,8 @@
 import os, receiver, socket, signal, sender, generator, filelist
 
 
-def server_local(dirs,dirr,dic,gs_g,sr_r):
-    receiver.receive_local(dirs,dirr,dic,gs_g,sr_r)
+def server_local(dirr,dic,gs_g,sr_r):
+    receiver.receive_local(dirr,dic,gs_g,sr_r)
 
 def reception_filelist(soc):
     file_lists=[]
@@ -12,7 +12,7 @@ def reception_filelist(soc):
         file_lists.append(message.str_to_dic(data))
     return file_lists
 
-def envoit_filelist(soc,file_list):
+def envoit_filelist(file_list,soc):
     nbr_file = len(file_list)
     for i in range(nbr_file):
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
@@ -42,7 +42,7 @@ def server_daemon(dic):
                 dic['push'] = False
                 if dic['--list-only']:
                     filelistSender = filelist.filelist(src,dic,'list-only')
-                    envoit_filelist(clisock,filelistSender)
+                    envoit_filelist(filelistSender,clisock)
                     sys.exit(0)
                     #et imprimmer chez le client
                 filelistSender = filelist.filelist(src,dic,'sender')
@@ -69,6 +69,7 @@ def server_daemon(dic):
                 filelistReceiver = filelist.filelist([dst],dic,'receiver')
                 pid1 = os.fork()
                 if pid1 == 0: #role receiver
+                    receiver.receive_daemon(dst,dic,gs_g,sr_r)
                 else : #role generateur
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,clisock)
                 #on enregistre dans dst ce qu'on recoit

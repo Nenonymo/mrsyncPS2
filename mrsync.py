@@ -90,6 +90,6 @@ if __name__ == '__main__' :
         gs_s,gs_g = os.pipe()
         pid=os.fork()
         if pid != 0 : #pere, server
-            server.server_local(src,dest,dic,gs_g,sr_r)
+            server.server_local(dest,dic,gs_g,sr_r)
         else : #fils, sender
             sender.send_local(src,dic,gs_s,sr_s)
