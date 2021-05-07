@@ -1,4 +1,4 @@
-import os, sys, socket, options, sender, server, receiver
+import os, sys, socket, options, sender, server, receiver, message
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
@@ -30,11 +30,6 @@ if __name__ == '__main__' :
             sshcom = "ssh -e none -l {} {}".format("distant", "localhost"} #a remplacer avec le bon utilisateur et la bonne machine
             os.execvp("{} ./mrsync.py --server {}".format(sshcom, dic['brut'])) #remplacement du processus par le processus server, n'executeras plus aucun code suivant cette ligne !
 
-
-    elif dic['--deamdet']:
-        
-
-
     elif dic['--daemon']:
 
         #séparation CMD
@@ -45,7 +40,7 @@ if __name__ == '__main__' :
             server.server_daemon(dic)
         else:
             #Deamonizing the process
-
+            log_file = '~/logRsync'
             #Vérification pas de démon en cours
             os.system('ps -ef | grep -v grep | grep "python mrsync.py" | wc -l > tmp')
             a = open('tmp', 'r').read()
@@ -72,7 +67,8 @@ if __name__ == '__main__' :
             sys.stderr.flush()
             i = open(os.devnull, 'r')
             os.dup2(i.fileno(), sys.stdin.fileno())
-            o = open(os.devnull, 'w')
+            if log_file != '': o = open(log_file, 'w')
+            else: o = open(os.devnull, 'w')
             os.dup2(o.fileno(), sys.stdout.fileno())
             e = open(os.devnull, 'w')
             os.dup2(e.fileno(), sys.stderr.fileno())
@@ -96,16 +92,20 @@ if __name__ == '__main__' :
             dic['pull'] = True
         #se connecter au serveur + envoyer premieres infos
         port = 10873
+        addr = '' #addresse par defaut ?
         if dic['--port'] != '':
             port = int(dic['--port'])
         if dic['--address'] != '':
             addr = dic['--address']
         clisock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
         clisock.connect((addr,port))
+        tag =['','l',(1,1)]
+        data=str(dic)+':'+ dest +':'+ str(src)
+        message.envoit_socket(clisock,tag,v=data)
         if dic['pull']:
             receiver.receive_daemon(dest,dic,servsoc)
         elif dic['push']:
-            #sender
+            sender.sender_daemon(dic,clisock,clisock)
 
     else : #si local
         if dic['-v'] > 1 :

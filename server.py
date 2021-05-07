@@ -20,7 +20,7 @@ def envoit_filelist(file_list,soc):
 
 def server_daemon(dic):
     port = 10873
-    addr = ''
+    addr = '' #addresse par defaut ?
     if dic['--port'] != '':
         port = int(dic['--port'])
     if dic['--address'] != '':
@@ -37,13 +37,11 @@ def server_daemon(dic):
             #reception des répertoires du client a stocker dans une liste
             tag,data  = message.recoit_socket(clisock)
             data = data.split(":")
-            dic = message.str_to_dic(data[1])
+            dic = message.str_to_dic(data[0])
             dic['--daemon'] = True #pour tester si c'est le cote server dans les fonctions suivantes
-            dst = data[2]
-            src = data[3] #a mettre sous forme de liste
-            if data[0] == 'pull':
-                dic['pull'] = True
-                dic['push'] = False
+            dst = data[1]
+            src = message.str_to_diclist(data[2]) #a mettre sous forme de liste
+            if dic['pull']:
                 if dic['--list-only']:
                     filelistSender = filelist.filelist(src,dic,'list-only')
                     envoit_filelist(filelistSender,clisock)
@@ -53,7 +51,7 @@ def server_daemon(dic):
                 r,w = os.pipe()
                 pid1 = os.fork()
                 if pid1 == 0 :
-                    sender.send_daemon(dic,r,clisock,servsock)
+                    sender.send_daemon(dic,r,clisock)
                 else :
                     #reception file_list_sender 
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,w)
@@ -62,9 +60,7 @@ def server_daemon(dic):
                 #liste des fichiers a creer envoyés au client
                 clisock.close()
                 sys.exit()
-            elif data[0] == 'push':
-                dic['pull'] = False
-                dic['push'] = True
+            elif dic['push']:
                 #reception de filelist sender
                 filelistSender = reception_filelist(soc)
                 if dst[-1] != '/':

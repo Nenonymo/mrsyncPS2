@@ -34,21 +34,21 @@ def supprimer(rep,len_rep,verbose):
     output : rien
     '''
     cur_dir=os.listdir(rep)
-    for elt in cur_dir:
-        elt = os.path.join(rep,elt)
-        if os.path.isdir(elt):
-            supprimer(elt,len_rep,verbose)
-        else:
+    for elt in cur_dir: #pour tout element dans dossier en cours de traitement
+        elt = os.path.join(rep,elt) #On recupère l'adresse absolue de l'élément traité
+        if os.path.isdir(elt): #Si elt traité = répertoire
+            supprimer(elt,len_rep,verbose) #Suppression du repertoire
+        else: #si autre que repertoire (fichier/lien symbolique)
             if verbose > 1 :
                 print('{} deleted'.format(elt[len_rep:]))
-            os.unlink(elt)
-    os.rmdir(rep)
+            os.unlink(elt) #suppression du fichier
+    os.rmdir(rep) #suppression du repertoire
 
 
 def delete_files(file_list_sender,file_list_receiver,verbose):
     '''supprime les fichiers et répertoires qui sont dans file_list_receiver et pas dans file_list_sender
 
-    utilisée dans la fonction princiaple generator lorsque l'option --delete est activée
+    utilisée dans la fonction principale generator lorsque l'option --delete est activée
 
     input : file_list_sender = la liste des fichiers source (liste de fichiers)
             file_list_receiver = la liste des fichiers de destination (qui se trouvent dans le répertoire de destination) (liste de fichiers)
@@ -56,18 +56,18 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
             {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
     output : rien
     '''
-    for elt in file_list_receiver:
+    for elt in file_list_receiver: #tout les elt de filelistreceiver
         test = True
-        for e in file_list_sender:
-            if elt['name_loc'] == e['name_loc']:
+        for e in file_list_sender: #tout les elt de filelistsender
+            if elt['name_loc'] == e['name_loc']: #si les deux elt sont les memes
                 test = False
                 break
-        if test:
-            if os.path.isdir(elt['name']):
+        if test: #si l'élément doit etre supprimé
+            if os.path.isdir(elt['name']): #si repertoire
                 supprimer(elt['name'],len(elt['name'])+1,verbose)
                 if verbose > 1 :
                     print('{} deleted'.format(elt['name_loc']))
-            else:
+            else: #si fidhier
                 try :
                     os.unlink(elt['name'])
                     if verbose > 1 :

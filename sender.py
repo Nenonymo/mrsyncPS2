@@ -54,10 +54,13 @@ def envoit_fichier(gs_s,sr_s,dic):
     if dic['-v'] :
         print('sending files ...', end=' ' if dic['-v'] < 2 else '\n')
     #reception de la liste de fichier du generateur + envoit des fichiers au receiver
-    tag,data = message.recoit(gs_s,lineFile='comSize1')
+    if dic['daemon'] and dic['push']: #daemon push
+        tag,data = message.recoit_socket(gs_s)
+    else :                   #local and daemon pull
+        tag,data = message.recoit(gs_s) 
     if tag[2][1]==0:
         nbr_file = 0
-        if dic['--daemon']: #daemon
+        if dic['--daemon'] or dic['daemon']: #daemon push and pull
             message.envoit_socket(sr_s,tag)
         else : #local
             message.envoit(sr_s,tag)
@@ -65,7 +68,7 @@ def envoit_fichier(gs_s,sr_s,dic):
         data = message.str_to_dic(data)
         tag = ['c','l',(0,tag[2][1])]
         #on envoit le nbr de fichiers a traiter
-        if dic['--daemon']: #daemon
+        if dic['--daemon'] or dic['daemon']: #daemon push and pull
             message.envoit_socket(sr_s,tag)
         else : #local
             message.envoit(sr_s,tag)
@@ -113,7 +116,10 @@ def envoit_fichier(gs_s,sr_s,dic):
             print('done')
         i += 1
         if i <= nbr_file:
-            tag,data = message.recoit(gs_s,lineFile='comSize1') #prochain fichier a traiter
+            if dic['daemon'] and dic['push']: #daemon push
+                tag,data = message.recoit_socket(gs_s)
+            else : #local and daemon pull
+                tag,data = message.recoit(gs_s)
             data = message.str_to_dic(data)
 
     if dic['-v'] :
@@ -137,18 +143,18 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     sys.exit(0)
 
 
-def sender_daemon(dic,r,clisock,servsock):
+def sender_daemon(dic,gs_s,clisock):
     '''gere la partie sender en mode pull daemon
 
     utilisee dans server_daemon, dans server.py
 
     input : dic = dictionnaire des options (dictionnaire)
-            r = descripteur de fichier cote sender, pipe generateur vers sender (descripteur de fichiers, int)
+            gs_s = si pull descripteur de fichier cote sender, pipe generateur vers sender (descripteur de fichiers, int)
+                   si push socket client (socket)
             clisock = socket client (socket)
-            servsock = socket server (socket)
     output : rien
     '''
-    envoit_fichier(r,clisock,dic)
+    envoit_fichier(gs_s,clisock,dic)
     sys.exit(0)
 
 #autres types de fichiers ???

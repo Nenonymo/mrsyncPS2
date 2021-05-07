@@ -114,24 +114,24 @@ def recoit_socket(soc):
 
     dataRaw = soc.recv(comSize) #read the whole message
     dataRaw = dataRaw.decode('utf-8')
+
     #Tag
     tagRaw = (dataRaw.split('\n')[0]) #Première ligne uniquement
     tagRawL = tagRaw.split(' ')
     tag = [tagRawL[0], tagRawL[1]] #localFileName and transmission category
     tag.append(tuple(map(int, tagRawL[2].split('_')))) #transmission num
     
-
     #Msg
     msg = (dataRaw[len(tagRaw)+1:]) #Everything but the first line
     
     return tag,msg
 
 def str_to_dic(v):
-    '''convert a string into a dictionnary
-    la chaine de caractère doit avoir une forme de dictionnaire ({a:b,c:d......})
+    '''convert a string en fichier (represente par un dictionnaire)
+    la chaine de caractère doit avoir une forme de fichier ({a:b,c:d......})
 
     input : v = la chaine de caractere a convertir (string)
-    output : d = le dictionnaire associé a v (dictionnaire)
+    output : d = le fichier associé a v (fichier, dictionnaire)
     '''
     v = v[1:-1].split(',')
     d=dict()
@@ -147,5 +147,33 @@ def str_to_dic(v):
             d[e[0][2:-1]]=int(e[1][1:])
     return d
 
+def str_to_diclist(v):
+    '''convert a string into fichier (represente par un dictionnaire)
+    la chaine de caractère doit avoir une forme de liste ([a,b,...])
+    avec a et b des fichiers
+
+    input : v = la chaine de caractere a convertir (string)
+    output : l = la liste associée a v (liste de fichiers, liste de dictionnaires)
+    '''
+    v = v[1:-1].split(',')
+    i=0
+    j=0
+    l=[]
+    while i < len(v):
+        e = v[i].split(':')
+        if e[0][0] == '{':
+            j=0
+            l1 = dict()
+            l1[e[0][1:-1]]]=e[1][2:-1]
+        elif j == 1:
+            l1[e[0][2:-1]]=e[1][2:-1]
+        elif e[1][-1] == '}': 
+            l1[e[0][2:-1]]=e[1][1:]
+            l.append(l1)
+        else :
+            l1[e[0][2:-1]]=int(e[1][1:])
+        i+=1
+        j+=1
+    return l
 
 #pour les comSize : quelle taille choisir ??
