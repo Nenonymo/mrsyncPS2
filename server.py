@@ -1,5 +1,12 @@
 import os, receiver, socket, signal, sender, generator, filelist
 
+def handler_SIGCHLD(sig,frame):
+    (pid,statut)=os.waitpid(-1,0)
+    return
+
+def handler_SIGTERM(sig,frame):
+    #tuer tous les fils
+    return
 
 def server_local(dirr,dic,gs_g,sr_r):
     receiver.receive_local(dirr,dic,gs_g,sr_r)
@@ -19,8 +26,9 @@ def envoit_filelist(file_list,soc):
         message.envoit_socket(soc,tag,v=file_list[i])
 
 def server_daemon(dic):
+    signal.signal(signal.SIGCHLD,handler)
     port = 10873
-    addr = '' #addresse par defaut ?
+    addr = '127.0.0.1' #addresse par defaut ?
     if dic['--port'] != '':
         port = int(dic['--port'])
     if dic['--address'] != '':
@@ -55,10 +63,10 @@ def server_daemon(dic):
                 else :
                     #reception file_list_sender 
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,w)
-                    os.wait()
                 #utilisation de receiver local, generator et sender local (aproximatif, refaire un truc)
                 #liste des fichiers a creer envoyés au client
                 clisock.close()
+                os.kill(os.getppid(),signal.SIGCHLD)
                 sys.exit()
             elif dic['push']:
                 #reception de filelist sender
@@ -71,7 +79,11 @@ def server_daemon(dic):
                     receiver.receive_daemon(dst,dic,gs_g,sr_r)
                 else : #role generateur
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,clisock)
-                #on enregistre dans dst ce qu'on recoit
+                #on enregistre dans dst ce qu'on 
+                    clisock.close()
+                    os.kill(os.getppid(),signal.SIGCHLD)
+                    sys.exit()
+
             
         else : #pere
             clisock.close()

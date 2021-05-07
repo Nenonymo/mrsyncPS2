@@ -90,6 +90,54 @@ def reception_fichiers(dirr,d,dic):
     if dic['-v']>0 :
         print('done', end='\n' if dic['-v'] < 2 else ' receiving files\n')
 
+def supprimer(rep,dic):
+    '''supprime un fichier ou un repertoire et
+    tous les fichiers qui se trouvent dedans
+    
+    utilisée dans reception_delete
+    
+    input : rep = un nom de répertoire ou fichier absolu (string)
+            dic = dictionnaire des options (dictionnaire)
+    output : rien
+    '''
+    if os.path.isdir(rep): #si repertoire
+        cur_dir=os.listdir(rep)
+        for elt in cur_dir: #pour tout element dans dossier en cours de traitement
+            elt = os.path.join(rep,elt) #On recupère l'adresse absolue de l'élément traité
+            if os.path.isdir(elt): #Si elt traité = répertoire
+                supprimer(elt,dic) #Suppression du repertoire
+            else: #si autre que repertoire (fichier/lien symbolique)
+                if dic['-v'] > 1 :
+                    print('{} deleted'.format(elt[len(rep)+1:]))
+                os.unlink(elt) #suppression du fichier
+        os.rmdir(rep) #suppression du repertoire
+        if dic['-v'] > 1 :
+            print('{} deleted'.format(elt['name_loc']))
+    else : #si fichier ou symlink
+        try :
+            os.unlink(rep)
+            if dic['-v'] > 1 :
+                    print('{} deleted'.format(elt['name_loc']))
+        except :
+            pass
+
+def reception_delete(soc,dic):
+    '''recoit la delete liste depuis la socket soc et supprime les fichier
+    de cette liste
+
+    utilisee dans la fonction principale receive_daemon
+
+    input : soc = socket cliente (socket)
+            dic = dictionnaire des options (dictionnaire)
+    output : rien
+    '''
+    tag,data = message.recoit_socket(soc)
+    nbrFile = tag[2][1]
+    if nbrFile != 0 :
+        supprimer(data['name'])
+    for i in range(1,nbrFile):
+        tag,data = message.recoit_socket(soc)
+        supprimer(data['name'])
 
 def receive_local(dirr,dic,gs_g,sr_r):
     '''fonction principale du receiver en mode local
@@ -117,31 +165,30 @@ def receive_local(dirr,dic,gs_g,sr_r):
 
 
 def receive_daemon(dst,dic,soc):
-    if dic['pull']: #cote client
-        if dic['--list-only']:
-            #On récupère la liste de fichier et tout ses éléments descripteurs
-            taille_tot = 0
-            tag,data = message.recoit(d)
-            nbr_file = tag[2][1]
-            i = 1
-            while i <= nbr_file:
-                tag,data = message.recoit_socket(soc)
-                data = message.str_to_dic(data)
-                taille_tot += data['size']
-                if not dic['-q'] :
-                    print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
-                i+=1
-            if dic['-v']>0 and not dic['-q'] ::
-                print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
-        else :
-            #calcul et envoit de filelistReceiver au demon
+    if dic['--list-only']:
+        #On récupère la liste de fichier et tout ses éléments descripteurs
+        taille_tot = 0
+        tag,data = message.recoit(d)
+        nbr_file = tag[2][1]
+        i = 1
+        while i <= nbr_file:
+            tag,data = message.recoit_socket(soc)
+            data = message.str_to_dic(data)
+            taille_tot += data['size']
+            if not dic['-q'] :
+                print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
+            i+=1
+        if dic['-v']>0 and not dic['-q'] ::
+            print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
+    else :
+        #calcul et envoit de filelistReceiver au demon
+        if dic['pull']:
             filelistReceiver = creation_filelist_receiver(dst,dic)
             nbrFile = len(filelistReceiver)
             for i in range(nbrFile):
                 tag = [filelistReceiver[i]['name_loc'],'l',(i+1,nbrFile)]
                 message.envoit_socket(soc,tag,v=filelistReceiver[i])
-
-            reception_fichiers(dst,soc,dic)
-        sys.exit(0)
-        
-    elif dic['push']:#cote server
+        #reception delete liste + suppression fichiers a faire
+        reception_delete(soc,dic)
+        reception_fichiers(dst,soc,dic)
+    sys.exit(0)

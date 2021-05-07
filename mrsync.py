@@ -92,7 +92,7 @@ if __name__ == '__main__' :
             dic['pull'] = True
         #se connecter au serveur + envoyer premieres infos
         port = 10873
-        addr = '' #addresse par defaut ?
+        addr = '127.0.0.1' #addresse par defaut ?
         if dic['--port'] != '':
             port = int(dic['--port'])
         if dic['--address'] != '':

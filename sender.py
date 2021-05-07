@@ -154,7 +154,23 @@ def sender_daemon(dic,gs_s,clisock):
             clisock = socket client (socket)
     output : rien
     '''
+    #reception delete liste
+    if dic['push']: #cote client
+        tag,data = message.recoit_socket(gs_g)
+    elif dic['pull']: #cote server
+        tag,data = message.recoit(gs_g)
+    nbrFile = tag[2][1]
+    message.envoit_socket(clisock,tag,data)
+    for i in range(1,nbrFile):
+        if dic['push']: #cote client
+           tag,data = message.recoit_socket(gs_g)
+        elif dic['pull']: #cote server
+            tag,data = message.recoit(gs_g)
+        message.envoit_socket(clisock,tag,data)
+    #reception de la liste des fichiers et envoit des fichiers
     envoit_fichier(gs_s,clisock,dic)
+    if dic['pull']:
+        os.kill(os.getppid(),signal.SIGCHLD)
     sys.exit(0)
 
 #autres types de fichiers ???

@@ -24,23 +24,24 @@ def sort_receiver(dir):
                 dir[j]=tmp'''
 
 
-def supprimer(rep,len_rep,verbose):
+def supprimer(rep,verbose):
     '''supprime un repertoire et
     tous les fichiers qui se trouvent dedans
     
     utilisée dans delete_files lorsque l'option --delete est activée
     
     input : rep = un nom de répertoire absolu (string)
+            verbose = niveau de verbose 
     output : rien
     '''
     cur_dir=os.listdir(rep)
     for elt in cur_dir: #pour tout element dans dossier en cours de traitement
         elt = os.path.join(rep,elt) #On recupère l'adresse absolue de l'élément traité
         if os.path.isdir(elt): #Si elt traité = répertoire
-            supprimer(elt,len_rep,verbose) #Suppression du repertoire
+            supprimer(elt,verbose) #Suppression du repertoire
         else: #si autre que repertoire (fichier/lien symbolique)
             if verbose > 1 :
-                print('{} deleted'.format(elt[len_rep:]))
+                print('{} deleted'.format(elt[len(rep)+1:]))
             os.unlink(elt) #suppression du fichier
     os.rmdir(rep) #suppression du repertoire
 
@@ -64,7 +65,7 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
                 break
         if test: #si l'élément doit etre supprimé
             if os.path.isdir(elt['name']): #si repertoire
-                supprimer(elt['name'],len(elt['name'])+1,verbose)
+                supprimer(elt['name'],verbose)
                 if verbose > 1 :
                     print('{} deleted'.format(elt['name_loc']))
             else: #si fidhier
@@ -144,21 +145,21 @@ def envoyer_liste(liste,nbr_file,fd):
 
     input : liste = la liste des fichiers à envoyer (liste de fichiers)
             nbr_file = le nombre de fichiers à envoyer = taille de liste (int)
-            fd = le descripteur de fichier de l'endroit ou on envoit les fichiers (descripteur de fichier, int)
-                 ou la socket cliente (socket)
+            fd = si local ou daemon pull : le descripteur de fichier de l'endroit ou on envoit les fichiers (descripteur de fichier, int)
+                 si daemon push : la socket cliente (socket)
     output : rien
     '''
     if nbr_file == 0:   #si liste est vide
         tag = ['','l',(0,0)]
-        if dic['--daemon'] and dic['push']:
+        if dic['--daemon'] and dic['push']: #daemon push
             message.envoit_socket(fd,tag)
-        else :
+        else : #local and daemon pull
             message.envoit(fd,tag)
     for i in range(nbr_file):
         tag = [liste[i]["name_loc"],"l",(i+1,nbr_file)]
-        if dic['--daemon'] and dic['push']:
+        if dic['--daemon'] and dic['push']: #daemon push
             message.envoit_socket(fd,tag,v=liste[i])
-        else :
+        else : #local and daemon pull
             message.envoit(fd,tag,v=liste[i])
 
 
@@ -200,8 +201,8 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
     input : filelistSender = liste de fichiers source (liste de fichiers)
             filelistReceiver = liste de fichiers destination (liste de fichiers)
             dic = dictionnaire des options (dictionnaire)
-            gs_g = descripteur de fichier du pipe generateur vers sender (descripteur de fichier, int)
-                   ou socket cliente si mode push (socket)
+            gs_g = si pull : descripteur de fichier du pipe generateur vers sender (descripteur de fichier, int)
+                   si push : socket cliente (socket)
     output : rien
     '''
     deleteList =[]
