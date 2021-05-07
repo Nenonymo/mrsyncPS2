@@ -191,4 +191,6 @@ def receive_daemon(dst,dic,soc):
         #reception delete liste + suppression fichiers a faire
         reception_delete(soc,dic)
         reception_fichiers(dst,soc,dic)
+        if dic['push']:
+            os.kill(os.getppid(),signal.SIGCHLD)
     sys.exit(0)

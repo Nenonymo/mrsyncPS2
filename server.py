@@ -65,9 +65,9 @@ def server_daemon(dic):
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,w)
                 #utilisation de receiver local, generator et sender local (aproximatif, refaire un truc)
                 #liste des fichiers a creer envoyés au client
-                clisock.close()
-                os.kill(os.getppid(),signal.SIGCHLD)
-                sys.exit()
+                    clisock.close()
+                    os.kill(os.getppid(),signal.SIGCHLD)
+                    sys.exit()
             elif dic['push']:
                 #reception de filelist sender
                 filelistSender = reception_filelist(soc)
