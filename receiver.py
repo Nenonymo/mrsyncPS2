@@ -134,6 +134,14 @@ def receive_daemon(dst,dic,soc):
             if dic['-v']>0 and not dic['-q'] ::
                 print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
         else :
+            #calcul et envoit de filelistReceiver au demon
+            filelistReceiver = creation_filelist_receiver(dst,dic)
+            nbrFile = len(filelistReceiver)
+            for i in range(nbrFile):
+                tag = [filelistReceiver[i]['name_loc'],'l',(i+1,nbrFile)]
+                message.envoit_socket(soc,tag,v=filelistReceiver[i])
+
             reception_fichiers(dst,soc,dic)
         sys.exit(0)
+        
     elif dic['push']:#cote server

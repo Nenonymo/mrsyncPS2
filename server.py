@@ -44,7 +44,6 @@ def server_daemon(dic):
                     filelistSender = filelist.filelist(src,dic,'list-only')
                     envoit_filelist(filelistSender,clisock)
                     sys.exit(0)
-                    #et imprimmer chez le client
                 filelistSender = filelist.filelist(src,dic,'sender')
                 filelistReceiver = reception_filelist(soc)
                 r,w = os.pipe()
