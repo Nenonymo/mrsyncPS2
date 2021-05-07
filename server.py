@@ -20,13 +20,17 @@ def envoit_filelist(file_list,soc):
 
 def server_daemon(dic):
     port = 10873
+    addr = ''
     if dic['--port'] != '':
         port = int(dic['--port'])
+    if dic['--address'] != '':
+        addr = dic['--address']
     servsock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
     servsock.bind((localhost, port)) #localhost??
     servsock.listen(maxqueuesize) #maxqueuesize ?
     while True: #condition?-> reception SIGTERM
-        clisock = sock.accept()
+        clisock = servsock.accept()
+        #a partir de la que clisock
         pid = os.fork()
         if pid == 0: #fils
             #gestion socket

@@ -1,4 +1,4 @@
-import os, sys, options, sender, server, receiver
+import os, sys, socket, options, sender, server, receiver
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
@@ -95,6 +95,13 @@ if __name__ == '__main__' :
             dic['push'] = False
             dic['pull'] = True
         #se connecter au serveur + envoyer premieres infos
+        port = 10873
+        if dic['--port'] != '':
+            port = int(dic['--port'])
+        if dic['--address'] != '':
+            addr = dic['--address']
+        clisock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
+        clisock.connect((addr,port))
         if dic['pull']:
             receiver.receive_daemon(dest,dic,servsoc)
         elif dic['push']:
