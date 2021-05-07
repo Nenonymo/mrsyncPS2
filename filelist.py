@@ -23,7 +23,7 @@ def parcours_simple(dir,nom_loc,verbose,whoami):
         st = os.stat(name)
         file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
         if verbose > 1 :
-            print('[{}][parcours simple] file add : {}'.format(whoami,nom))
+            print('[{}] file add : {}'.format(whoami,nom))
     return file_list
 
 '''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier file_list
@@ -49,7 +49,7 @@ def parcours_rec(dir,nom_loc,verbose,whoami):
         else :
             nom=nom_loc+'/'+elt
         if verbose > 1 :
-            print('[{}][parcours recursif] file add : {}'.format(whoami,nom))
+            print('[{}] file add : {}'.format(whoami,nom))
         st = os.stat(name)
         if os.path.isdir(name):
             file_list = file_list+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose,whoami)
@@ -142,7 +142,7 @@ output : file_list = liste des fichiers de chaque element de lis_dir (liste de f
 '''
 def filelist(lis_dir,dic,whoami):
     if dic['-v'] :
-        print('building file list {} ... '.format(whoami), end=('' if dic['-v'] < 2 else '\n'))
+        print('building file list {} ... '.format(whoami), end='' if dic['-v'] < 2 else '\n')
     file_list = []
     lis_dir_abs,lis_dir = norm_liste_dir(lis_dir)
     if dic['-v'] > 1 :

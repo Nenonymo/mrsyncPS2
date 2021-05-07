@@ -138,7 +138,7 @@ def creation_sendlist(file_list_sender,file_list_receiver,verbose):
     return send_list,len(send_list)
 
 
-def envoyer_liste(liste,nbr_file,fd):
+def envoyer_liste(liste,nbr_file,fd,dic):
     '''envoit fichier par fichier la liste de fichiers liste au sender
 
     utilisee dans la fonction principale generator
@@ -186,7 +186,7 @@ def generator_local(file_list_sender,file_list_receiver,dic,gs_g):
     if dic['-v'] :
         print('done' if dic['-v'] < 2 else 'sendlist created')
     #envoit de la liste des fichiers au sender
-    envoyer_liste(send_list,nbr_file,gs_g)
+    envoyer_liste(send_list,nbr_file,gs_g,dic)
     #attente de la fin des fils et terminaison
     os.wait()
     os.wait()
@@ -211,7 +211,23 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
         deleteList,nbrDelete = creation_deletelist(filelistSender,filelistReceiver)
     sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver)
     #envoit de la liste de fichier au sender
-    envoyer_liste(deleteList,nbrDelete,gs_g)
-    envoyer_liste(sendList,nbrFile,gs_g)
+    envoyer_liste(deleteList,nbrDelete,gs_g,dic)
+    envoyer_liste(sendList,nbrFile,gs_g,dic)
 
 #A faire : gérer les options perm et time
+'''à ajouter :
+-u : skip files that are newer on the receiver
+-d : transfer directories without recursing
+-H : preserve hard links
+-p : preserve permissions
+-t : preserve times
+--size-only : skip files that match in size
+--existing : skip creating new files on receiver
+--ignore-existing : skip updating files that exist on receiver
+--force : force deletion of dirs even if not empty
+
+(ceux-là, j'avoue ne pas les comprendre)
+--timeout=TIME : set I/O timeout in seconds
+--blocking-io : use blocking I/O for the remote shell
+-a : archive mode; same as -rpt (no -H)
+'''
