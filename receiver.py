@@ -101,7 +101,7 @@ def receive_local(dirs,dirr,dic,gs_g,sr_r):
     #creation du generateur
     pid=os.fork()
     if pid != 0: #père, générateur
-        generator.generator_local(dirs,dirr,file_lists,file_listr,dic,gs_g)
+        generator.generator_local(file_lists,file_listr,dic,gs_g)
     else: #fils, receiver, reception des fichiers
         reception_fichiers(dirr,sr_r,dic['-v'])
         #terminaison

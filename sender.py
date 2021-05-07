@@ -25,7 +25,7 @@ def send_listonly(lis_dir,dic):
 def envoit_list_sender(dir,dic,w):
     '''cree la liste de fichiers et l'envoit sur le descripteur w fichier par fichier
 
-    utilisee dans la fonction principale send_local
+    utilisee dans la fonction principale send_local et la fonction principale send_daemon
 
     input : dir = liste des noms de fichiers/repertoires a traiter (liste de string)
             dic = dictionnaire des options (dictionnaire)
@@ -47,7 +47,7 @@ def envoit_fichier(gs_s,sr_s,dic):
 
     input : gs_g = descripteur de fichier cote sender, generateur vers sender (descripteur de fichier, int)
             sr_s = descripteur de fichier cote sender, sender vers receiver (descripteur de fichier, int)
-                   socket cliente si mode server daemon(descripteur de socket)
+                   socket cliente si mode server daemon(socket)
             dic = dictionnaire des options (dictionnaire)
     output : rien
     '''
@@ -144,8 +144,8 @@ def sender_daemon(dic,r,clisock,servsock):
 
     input : dic = dictionnaire des options (dictionnaire)
             r = descripteur de fichier cote sender, pipe generateur vers sender (descripteur de fichiers, int)
-            clisock = socket client (descripteur de socket)
-            servsock = socket server (descripteur de socket)
+            clisock = socket client (socket)
+            servsock = socket server (socket)
     output : rien
     '''
     envoit_fichier(r,clisock,dic)

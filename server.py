@@ -34,9 +34,12 @@ def server_daemon(dic):
             tag,data  = message.recoit_socket(clisock)
             data = data.split(":")
             dic = message.str_to_dic(data[1])
+            dic['--daemon'] = True #pour tester si c'est le cote server dans les fonctions suivantes
             dst = data[2]
             src = data[3] #a mettre sous forme de liste
             if data[0] == 'pull':
+                dic['pull'] = True
+                dic['push'] = False
                 if dic['--list-only']:
                     filelistSender = filelist.filelist(src,dic,'list-only')
                     envoit_filelist(clisock,filelistSender)
@@ -50,15 +53,25 @@ def server_daemon(dic):
                     sender.send_daemon(dic,r,clisock,servsock)
                 else :
                     #reception file_list_sender 
-                    generator.generator_daemon(src,dst,filelistSender,filelistReceiver,dic,w)
+                    generator.generator_daemon(filelistSender,filelistReceiver,dic,w)
                     os.wait()
                 #utilisation de receiver local, generator et sender local (aproximatif, refaire un truc)
                 #liste des fichiers a creer envoyés au client
                 clisock.close()
                 sys.exit()
             elif data[0] == 'push':
+                dic['pull'] = False
+                dic['push'] = True
                 #reception de filelist sender
                 filelistSender = reception_filelist(soc)
+                if dst[-1] != '/':
+                    dst = dst + '/'
+                filelistReceiver = filelist.filelist([dst],dic,'receiver')
+                pid1 = os.fork()
+                if pid1 == 0: #role receiver
+                else : #role generateur
+                    generator.generator_daemon(filelistSender,filelistReceiver,dic,clisock)
+                #on enregistre dans dst ce qu'on recoit
             
         else : #pere
             clisock.close()

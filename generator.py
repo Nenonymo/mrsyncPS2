@@ -23,15 +23,16 @@ def sort_receiver(dir):
                 dir[i]=dir[j]
                 dir[j]=tmp'''
 
-'''supprime un repertoire et
- tous les fichiers qui se trouvent dedans
- 
- utilisée dans delete_files lorsque l'option --delete est activée
- 
- input : rep = un nom de répertoire absolu (string)
- output : rien
-'''
+
 def supprimer(rep,len_rep,verbose):
+    '''supprime un repertoire et
+    tous les fichiers qui se trouvent dedans
+    
+    utilisée dans delete_files lorsque l'option --delete est activée
+    
+    input : rep = un nom de répertoire absolu (string)
+    output : rien
+    '''
     cur_dir=os.listdir(rep)
     for elt in cur_dir:
         elt = os.path.join(rep,elt)
@@ -44,17 +45,17 @@ def supprimer(rep,len_rep,verbose):
     os.rmdir(rep)
 
 
-'''supprime les fichiers et répertoires qui sont dans file_list_receiver et pas dans file_list_sender
-
-utilisée dans la fonction princiaple generator lorsque l'option --delete est activée
-
-input : file_list_sender = la liste des fichiers source (liste de fichiers)
-        file_list_receiver = la liste des fichiers de destination (qui se trouvent dans le répertoire de destination) (liste de fichiers)
-        un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
-        {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
-output : rien
-'''
 def delete_files(file_list_sender,file_list_receiver,verbose):
+    '''supprime les fichiers et répertoires qui sont dans file_list_receiver et pas dans file_list_sender
+
+    utilisée dans la fonction princiaple generator lorsque l'option --delete est activée
+
+    input : file_list_sender = la liste des fichiers source (liste de fichiers)
+            file_list_receiver = la liste des fichiers de destination (qui se trouvent dans le répertoire de destination) (liste de fichiers)
+            un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
+            {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
+    output : rien
+    '''
     for elt in file_list_receiver:
         test = True
         for e in file_list_sender:
@@ -74,15 +75,16 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
                 except :
                     pass
 
-'''teste si le fichier 'fichier' doit ajoute a la send_list = liste des fichiers a envoyer au receiver
 
-utilisee dans la fonction creation_sendlist
-
-input : fichier = le fichier a tester (fichier)
-        file_list_receiver = la liste des fichiers de destination (liste de fichiers)
-output : Vrai si le fichier doit etre envoyé, Faux sinon (booleen)
-'''
 def no_skip(fichier,file_list_receiver):
+    '''teste si le fichier 'fichier' doit ajoute a la send_list = liste des fichiers a envoyer au receiver
+
+    utilisee dans la fonction creation_sendlist
+
+    input : fichier = le fichier a tester (fichier)
+            file_list_receiver = la liste des fichiers de destination (liste de fichiers)
+    output : Vrai si le fichier doit etre envoyé, Faux sinon (booleen)
+    '''
     for elt in file_list_receiver:
         if elt['name_loc'] == fichier['name_loc'] :
             if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
@@ -93,30 +95,39 @@ def no_skip(fichier,file_list_receiver):
 #gestion des fichiers spéciaux (device node) ?
     return True
 
-'''cree une liste de fichiers a supprimer pour le mode daemon, pas utilise pour le moment 
-'''
-def creation_deletelist(file_list_sender,file_list_receiver):
-    delete_list=[]
-    for elt in file_list_receiver:
+
+def creation_deletelist(filelistSender,filelistReceiver):
+    '''cree une liste de fichiers a supprimer pour le mode daemon 
+    
+    utilisee dans generator_daemon
+
+    input : filelistSender = liste des fichiers source (liste de fichier)
+            filelistReceiver = liste des fichiers destination (liste de fichier)
+    output : deleteList = liste des fichier a supprimmer dans la destination (liste de fichier)
+             len(deleteList) = taille de deleteList (int)
+    '''
+    deleteList=[]
+    for elt in filelistReceiver:
         test = True
-        for e in file_list_sender:
+        for e in filelistSender:
             if elt['name_loc'] == e['name_loc']:
                 test = False
                 break
         if test:
-                delete_list.append(elt)
-    return delete_list,len(delete_list)
+                deleteList.append(elt)
+    return deleteList,len(deleteList)
 
-'''cree la liste de fichiers a envoyer au receiver
 
-utilisee dans la fonction principale generator
-
-input : file_list_sender = liste de fichiers sources (liste de fichiers)
-        file_list_receiver = liste de fichiers destination (liste de fichiers)
-output : send_list = liste de fichiers à envoyer (liste de fichier)
-        len(send_list) = taille de send_list (int)
-'''
 def creation_sendlist(file_list_sender,file_list_receiver,verbose):
+    '''cree la liste de fichiers a envoyer au receiver
+
+    utilisee dans la fonction principale generator
+
+    input : file_list_sender = liste de fichiers sources (liste de fichiers)
+            file_list_receiver = liste de fichiers destination (liste de fichiers)
+    output : send_list = liste de fichiers à envoyer (liste de fichier)
+            len(send_list) = taille de send_list (int)
+    '''
     send_list=[]
     for elt in file_list_sender:
         if no_skip(elt,file_list_receiver):
@@ -125,36 +136,43 @@ def creation_sendlist(file_list_sender,file_list_receiver,verbose):
             print('{} skipped'.format(elt['name_loc']))
     return send_list,len(send_list)
 
-'''envoit fichier par fichier la liste de fichiers liste au sender
 
-utilisee dans la fonction principale generator
-
-input : liste = la liste des fichiers à envoyer (liste de fichiers)
-        nbr_file = le nombre de fichiers à envoyer = taille de liste (int)
-        fd = le descripteur de fichier de l'endroit ou on envoit les fichiers (descripteur de fichier, int)
-output : rien
-'''
 def envoyer_liste(liste,nbr_file,fd):
+    '''envoit fichier par fichier la liste de fichiers liste au sender
+
+    utilisee dans la fonction principale generator
+
+    input : liste = la liste des fichiers à envoyer (liste de fichiers)
+            nbr_file = le nombre de fichiers à envoyer = taille de liste (int)
+            fd = le descripteur de fichier de l'endroit ou on envoit les fichiers (descripteur de fichier, int)
+                 ou la socket cliente (socket)
+    output : rien
+    '''
     if nbr_file == 0:   #si liste est vide
         tag = ['','l',(0,0)]
-        message.envoit(fd,tag,lineFile='comSize1')
+        if dic['--daemon'] and dic['push']:
+            message.envoit_socket(fd,tag)
+        else :
+            message.envoit(fd,tag)
     for i in range(nbr_file):
         tag = [liste[i]["name_loc"],"l",(i+1,nbr_file)]
-        message.envoit(fd,tag,v=liste[i],lineFile='comSize1')
+        if dic['--daemon'] and dic['push']:
+            message.envoit_socket(fd,tag,v=liste[i])
+        else :
+            message.envoit(fd,tag,v=liste[i])
 
-'''fonction principale du generateur pour le mode local
 
-utilisee par le receiver dans receive_local dans receiver.py
+def generator_local(file_list_sender,file_list_receiver,dic,gs_g):
+    '''fonction principale du generateur pour le mode local
 
-input : dirs = repertoires source (liste de string)
-        dirr = repertoire destination (string)
-        file_list_sender = liste de fichiers source (liste de fichiers)
-        file_list_receiver = liste de fichiers destination (liste de fichiers)
-        dic = dictionnaire des options (dictionnaire)
-        gs_g = descripteur de fichier du pipe generateur vers sender (descripteur de fichier, int)
-output : rien
-'''
-def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
+    utilisee par le receiver dans receive_local dans receiver.py
+
+    input : file_list_sender = liste de fichiers source (liste de fichiers)
+            file_list_receiver = liste de fichiers destination (liste de fichiers)
+            dic = dictionnaire des options (dictionnaire)
+            gs_g = descripteur de fichier du pipe generateur vers sender (descripteur de fichier, int)
+    output : rien
+    '''
     if dic["--delete"]:
         if dic['-v'] :
             print('deleting files ...',end=' ' if dic['-v'] < 2 else '\n')
@@ -173,16 +191,26 @@ def generator_local(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
     os.wait()
     sys.exit(0)
 
-'''fonction principale du generateur pour le mode daemon
-'''
-def generator_daemon(dirs,dirr,file_list_sender,file_list_receiver,dic,gs_g):
-    delete_list =[]
-    nbr_delete=0
-    #if dic["--delete"]:   pas de delete dans le mode deamon
-    #    delete_list,nbr_delete=creation_deletelist(file_list_sender,file_list_receiver)
-    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver)
+
+def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
+    '''fonction principale du generateur en mode daemon 
+
+    utilisee dans server_daemon dans server.py
+
+    input : filelistSender = liste de fichiers source (liste de fichiers)
+            filelistReceiver = liste de fichiers destination (liste de fichiers)
+            dic = dictionnaire des options (dictionnaire)
+            gs_g = descripteur de fichier du pipe generateur vers sender (descripteur de fichier, int)
+                   ou socket cliente si mode push (socket)
+    output : rien
+    '''
+    deleteList =[]
+    nbDelete=0
+    if dic["--delete"]:
+        deleteList,nbrDelete = creation_deletelist(filelistSender,filelistReceiver)
+    sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver)
     #envoit de la liste de fichier au sender
-    #envoyer_liste(delete_list,nbr_delete,gs_g)
-    envoyer_liste(send_list,nbr_file,gs_g)
+    envoyer_liste(deleteList,nbrDelete,gs_g)
+    envoyer_liste(sendList,nbrFile,gs_g)
 
 #A faire : gérer les options perm et time
