@@ -18,9 +18,11 @@ def parser(args) :
             elif ':' in i :
                 dic['ssh'] = True
             fichiers += [i]
-    if '--daemon' in args : 
+    if '--daemon' in args : #serveur daemon
         dic['--daemon'] = True
-    elif len(fichiers) == 0 :
+    elif '--server' in args : #serveur ssh
+        dic['--server'] = True
+    elif len(fichiers) == 0 : #exception si pas de fichier et pas un serveur
         show_help('mrsync.txt')
         raise Exception('Pas de fichier')
     elif len(fichiers) == 1 :
@@ -42,7 +44,7 @@ def parser(args) :
         elif i == '-q' :
             dic['-q'] = True
             dic['-v'] = 0
-        elif i == '-v' and not dic['-q'] :
+        elif i == '-v' and not dic['-q'] : #comment ça marhce ?
             if dic['-v'] >= 3 :
                 dic['-v'] = 3
             else :
@@ -50,8 +52,8 @@ def parser(args) :
         else :
             dic[i] = True
     
-    if dic['--daemon'] :
-        listDaemonArgs = ['--daemon', 'daemonserveur', '--address', '--no-detach', '--port', '-h']
+    if dic['--daemon'] :       #daemon (serveur), le client du daemon peut avoir toutes les options qu'il veut
+        listDaemonArgs = ['--daemon', '--address', '--no-detach', '--port', '-h']
         for i in arguments :
             if i.split('=')[0] not in listDaemonArgs :
                 raise Exception('Arguments invalide')

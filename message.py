@@ -1,4 +1,4 @@
-import os
+import os,socket
 '''contient une fonction d'envoit send(fd,tag,v)
 une fonction de reception receive(fd) qui retourne tag et v recus
 des fonctions pour savoir si on affiche ou non qqchose (avec les options -v et -q)
@@ -72,7 +72,67 @@ def envoit(fd,tag,lineFile="comSize",v=''):
 
     return(0)
 
+def envoit_socket(soc, tag, v=''):
+    '''Wrtiting the message on the socket soc
+
+    Args:
+        soc (socket descriptor): descriptor of the output socket
+        tag (struct): info about the file and the properties of the transmission (localName, cat, transmissionNumber)
+        v (string): content to write
+    
+    Returns:
+        None
+    '''
+    if tag[1] == 'r' or tag[1] == 'l' or tag[1] == 'f' or tag[1] == 's':
+        content = "{} {} {}_{}\n{}".format(tag[0], tag[1], tag[2][0], tag[2][1], v)
+    else:
+        raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")
+    content = bytes(content,'utf-8')
+    taille = str(len(content))
+    clp = 50 - len(nbr)
+    nbr = (nbr + clp*"r").encode('utf-8')
+    soc.send(taille)           #packet size
+    soc.send(content)          #packet
+
+    return(0)
+
+
+def recoit_socket(soc):
+        '''reception et traitement d'un message
+    
+    Args:
+        soc (socket descriptor): descriptor of the input socket
+        
+    Returns:
+        tag (list): info about the file and the properties of the transmission (localName, cat, transmissionNumber)
+        msg (string): content of the file'''
+
+    taille = soc.recv(50)   #size of the incomming packet
+    taille = taille.decode('utf-8')
+    comSize = taille.split('r')[0]
+    comSize = int(comSize)
+
+    dataRaw = soc.recv(comSize) #read the whole message
+    dataRaw = dataRaw.decode('utf-8')
+    #Tag
+    tagRaw = (dataRaw.split('\n')[0]) #Première ligne uniquement
+    tagRawL = tagRaw.split(' ')
+    tag = [tagRawL[0], tagRawL[1]] #localFileName and transmission category
+    tag.append(tuple(map(int, tagRawL[2].split('_')))) #transmission num
+    
+
+    #Msg
+    msg = (dataRaw[len(tagRaw)+1:]) #Everything but the first line
+    
+    return tag,msg
+
 def str_to_dic(v):
+    '''convert a string into a dictionnary
+    la chaine de caractère doit avoir une forme de dictionnaire ({a:b,c:d......})
+
+    input : v = la chaine de caractere a convertir (string)
+    output : d = le dictionnaire associé a v (dictionnaire)
+    '''
     v = v[1:-1].split(',')
     d=dict()
     for i in range(len(v)):
