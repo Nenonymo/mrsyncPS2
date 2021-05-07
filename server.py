@@ -1,11 +1,12 @@
-import os, receiver, socket, signal, sender, generator, filelist
+import os, receiver, socket, signal, sender, generator, filelist, message
 
 def handler_SIGCHLD(sig,frame):
     (pid,statut)=os.waitpid(-1,0)
     return
 
 def handler_SIGTERM(sig,frame):
-    #tuer tous les fils
+    os.kill(-1,signal.SIGINT)
+    sys.exit()
     return
 
 def server_local(dirr,dic,gs_g,sr_r):
@@ -26,25 +27,31 @@ def envoit_filelist(file_list,soc):
         message.envoit_socket(soc,tag,v=file_list[i])
 
 def server_daemon(dic):
-    signal.signal(signal.SIGCHLD,handler)
+    signal.signal(signal.SIGCHLD,handler_SIGCHLD)
+    signal.signal(signal.SIGTERM,handler_SIGTERM)
     port = 10873
     addr = '127.0.0.1' #addresse par defaut ?
     if dic['--port'] != '':
         port = int(dic['--port'])
+    print('apres port')
     if dic['--address'] != '':
         addr = dic['--address']
+    print('adresse')
+    print("avant apres port et addr")
     servsock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
-    servsock.bind((localhost, port)) #localhost??
-    servsock.listen(maxqueuesize) #maxqueuesize ?
-    while True: #condition?-> reception SIGTERM
-        clisock = servsock.accept()
-        #a partir de la que clisock
+    print("apres creation socket")
+    servsock.bind((addr, port)) 
+    print("apres bind")
+    servsock.listen(10) #maxqueuesize ?
+    print("avant l'attente")
+    while True:
+        clisock,(fromaddr,fromport) = servsock.accept()
+        print("apres")
         pid = os.fork()
-        if pid == 0: #fils
-            #gestion socket
-            #reception des répertoires du client a stocker dans une liste
+        if pid == 0: #fils, gère la requète
+            #reception du dictionnaire client, repertoire destination, repertoire source
             tag,data  = message.recoit_socket(clisock)
-            data = data.split(":")
+            data = data.split(";")#changer la methode 3 envoit
             dic = message.str_to_dic(data[0])
             dic['--daemon'] = True #pour tester si c'est le cote server dans les fonctions suivantes
             dst = data[1]
@@ -82,8 +89,7 @@ def server_daemon(dic):
                 #on enregistre dans dst ce qu'on 
                     clisock.close()
                     os.kill(os.getppid(),signal.SIGCHLD)
-                    sys.exit()
+                    sys.exit(0)
 
-            
-        else : #pere
+        else : #pere, retourne en attente
             clisock.close()

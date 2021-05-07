@@ -178,7 +178,7 @@ def receive_daemon(dst,dic,soc):
             if not dic['-q'] :
                 print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
             i+=1
-        if dic['-v']>0 and not dic['-q'] ::
+        if dic['-v']>0 and not dic['-q'] :
             print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond
     else :
         #calcul et envoit de filelistReceiver au demon

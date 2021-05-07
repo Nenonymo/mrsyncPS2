@@ -27,7 +27,7 @@ if __name__ == '__main__' :
 
         else:
             #trucs s^urement importants
-            sshcom = "ssh -e none -l {} {}".format("distant", "localhost"} #a remplacer avec le bon utilisateur et la bonne machine
+            sshcom = "ssh -e none -l {} {}".format("distant", "localhost") #a remplacer avec le bon utilisateur et la bonne machine
             os.execvp("{} ./mrsync.py --server {}".format(sshcom, dic['brut'])) #remplacement du processus par le processus server, n'executeras plus aucun code suivant cette ligne !
 
     elif dic['--daemon']:
@@ -40,12 +40,13 @@ if __name__ == '__main__' :
             server.server_daemon(dic)
         else:
             #Deamonizing the process
-            log_file = '~/logRsync'
+            log_file = '/tmp/mrsync.log'
             #Vérification pas de démon en cours
-            os.system('ps -ef | grep -v grep | grep "python mrsync.py" | wc -l > tmp')
+            os.system('ps -ef | grep -v grep | grep "mrsync.py" | wc -l > tmp')
             a = open('tmp', 'r').read()
             os.remove('tmp')
-            if int(a) >= 1:
+            print(a)
+            if int(a) > 1:
                 #code erreur démon déjà en cours
                 print("erreur : mrsync est déjà en cours sur cette machine")
                 sys.exit(0)
@@ -70,9 +71,10 @@ if __name__ == '__main__' :
             if log_file != '': o = open(log_file, 'w')
             else: o = open(os.devnull, 'w')
             os.dup2(o.fileno(), sys.stdout.fileno())
-            e = open(os.devnull, 'w')
-            os.dup2(e.fileno(), sys.stderr.fileno())
-
+            #e = open(os.devnull, 'w')
+            #os.dup2(e.fileno(), sys.stderr.fileno())
+            os.dup2(o.fileno(), sys.stderr.fileno())
+            print('We are trying to make this work !')
             server.server_daemon(dic)
 
     elif dic['daemon']:
@@ -80,12 +82,12 @@ if __name__ == '__main__' :
             print('mode daemon')
         if '::' in dest :
             dest = dest.split('::')
-            host = dest[0]
+            host = dest[0]  #a quoi sert host ??? addr ?
             dest = dest[1]
             dic['push'] = True
             dic['pull'] = False
         elif '::' in src[0]:
-            src[0]= src.split('::')
+            src[0]= src[0].split('::')
             host = src[0][0]
             src[0] = src[0][1]
             dic['push'] = False
@@ -100,10 +102,10 @@ if __name__ == '__main__' :
         clisock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
         clisock.connect((addr,port))
         tag =['','l',(1,1)]
-        data=str(dic)+':'+ dest +':'+ str(src)
+        data=str(dic)+';'+ dest +';'+ str(src) #changer la methode, 3 envois
         message.envoit_socket(clisock,tag,v=data)
         if dic['pull']:
-            receiver.receive_daemon(dest,dic,servsoc)
+            receiver.receive_daemon(dest,dic,clisock)
         elif dic['push']:
             sender.sender_daemon(dic,clisock,clisock)
 

@@ -89,8 +89,8 @@ def envoit_socket(soc, tag, v=''):
         raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")
     content = bytes(content,'utf-8')
     taille = str(len(content))
-    clp = 50 - len(nbr)
-    nbr = (nbr + clp*"r").encode('utf-8')
+    clp = 50 - len(taille)
+    taille = (taille + clp*"r").encode('utf-8')
     soc.send(taille)           #packet size
     soc.send(content)          #packet
 
@@ -98,7 +98,7 @@ def envoit_socket(soc, tag, v=''):
 
 
 def recoit_socket(soc):
-        '''reception et traitement d'un message
+    '''reception et traitement d'un message
     
     Args:
         soc (socket descriptor): descriptor of the input socket
@@ -164,7 +164,7 @@ def str_to_diclist(v):
         if e[0][0] == '{':
             j=0
             l1 = dict()
-            l1[e[0][1:-1]]]=e[1][2:-1]
+            l1[e[0][1:-1]]=e[1][2:-1]
         elif j == 1:
             l1[e[0][2:-1]]=e[1][2:-1]
         elif e[1][-1] == '}': 
