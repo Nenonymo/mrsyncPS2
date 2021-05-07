@@ -165,7 +165,7 @@ def receive_local(dirr,dic,gs_g,sr_r):
 
 
 def receive_daemon(dst,dic,soc):
-    if dic['--list-only']:
+    if dic['--list-only'] and dic['pull']:
         #On récupère la liste de fichier et tout ses éléments descripteurs
         taille_tot = 0
         tag,data = message.recoit(d)
