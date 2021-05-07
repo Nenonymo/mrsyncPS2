@@ -1,4 +1,4 @@
-import os, sys, options, sender, server
+import os, sys, options, sender, server, receiver
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
@@ -82,6 +82,23 @@ if __name__ == '__main__' :
     elif dic['daemon']:
         if dic['-v'] > 1 :
             print('mode daemon')
+        if '::' in dest :
+            dest = dest.split('::')
+            host = dest[0]
+            dest = dest[1]
+            dic['push'] = True
+            dic['pull'] = False
+        elif '::' in src[0]:
+            src[0]= src.split('::')
+            host = src[0][0]
+            src[0] = src[0][1]
+            dic['push'] = False
+            dic['pull'] = True
+        #se connecter au serveur + envoyer premieres infos
+        if dic['pull']:
+            receiver.receive_daemon(dest,dic,servsoc)
+        elif dic['push']:
+            #sender
 
     else : #si local
         if dic['-v'] > 1 :
