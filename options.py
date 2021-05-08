@@ -10,20 +10,7 @@ def parser(args) :
     args = args[1:]
     fichiers = []
     destination = ''
-<<<<<<< HEAD
-    dic = {'-v':0, '--timeout':0,'-q':False, '-a':False, '-r':False, '-u':False, '-d':False,
-        '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False,
-        '--delete':False, '--force':False, '--blocking-io':False, '-I':False, '--size-only':False, 
-        '--list-only':False, '-h':False, 'ssh':False, 'daemon':False, '--no-detach':False,
-        '--daemon':False, '--server':False,'push':False,'pull':False,'--address':'', '--port':''}
-    if len(args) == 0 or '-h' in args or '--help' in args :
-        show_help('mrsync.txt')
-=======
-    dic = {'-v':0, '-q':False, '-a':False, '-r':False, '-u':False, '-d':False, '-H':False, '-p':False, '-t':False, '--existing':False, '--ignore-existing':False, '--delete':False, '--force':False, '--timeout':0, '--blocking-io':False, '-I':False, '--size-only':False, '--address':'', '--port':'', '--list-only':False, '-h':False, 'ssh':False, 'daemon':False, '--no-detach':False, '--daemon':False, '--server':False}
-    if len(args) == 0 :
-        show_help()
->>>>>>> b4dc02bbd11b43456ad2d5e6f21440dfd752e3a3
-        sys.exit(0)
+
     for i in range(len(args)) :
         if args[i][0] == '-' :
             try : dic = argument_management(args[i],args[i+1])
