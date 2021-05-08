@@ -49,7 +49,7 @@ def parser(args) :
 
     if dic['--daemon'] :  #daemon (serveur), le client du daemon peut avoir toutes les options qu'il veut
         for key,elt in dic.items() :
-            if '-v' in elt or elt and key not in ['--daemon', '--address', '--no-detach', '--port', '-h'] :
+            if elt and key not in ['-v','-vv','-vvv','--daemon', '--address', '--no-detach', '--port', '-h'] :
                 raise Exception('Arguments invalide (daemon mode)')
 
 
@@ -80,6 +80,10 @@ def argument_management(dic, elt, elt_next) :
     if elt == '-h' :
         show_help()
         sys.exit(0)
+    elif elt == '-a': #same as rpt
+        dic['-r'] = True
+        dic['-p'] = True
+        dic['-t'] = True
     elif '=' in elt :   #s'il y a '=' on fait l'affectation
         j = elt.split('=')
         if j[0] == '--timeout' or j[0] == '--port':

@@ -89,7 +89,7 @@ if __name__ == '__main__' :
             print('mode daemon')
         if '::' in dest :
             dest = dest.split('::')
-            host = dest[0]  #a quoi sert host ??? addr ?
+            host = dest[0]  #a quoi sert host ??? 
             dest = dest[1]
             dest = os.path.abspath(dest)
             dic['push'] = True
@@ -104,6 +104,8 @@ if __name__ == '__main__' :
                 src[i] = os.path.abspath(src[i]) + a
             dic['push'] = False
             dic['pull'] = True
+        if dic['--list-only'] and dic ['push']:
+            sender.send_listonly(src, dic)
         #se connecter au serveur + envoyer premieres infos
         port = 10873
         addr = '127.0.0.1' #addresse par defaut ?
