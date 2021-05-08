@@ -63,7 +63,8 @@ def reception_fichiers(dirr,d,dic):
         #lien symbolique
         elif tag[1]=='s':
             chemin=os.path.join(dirr,tag[0])
-            os.symlink(data['name'],chemin)
+            fic = os.readlink(data['name'])
+            os.symlink(fic,chemin)
         #fichier
         elif tag[1]=='f':
             chemin = os.path.join(dirr,tag[0])
@@ -113,7 +114,7 @@ def supprimer(rep,dic):
         os.rmdir(rep) #suppression du repertoire
         if dic['-v'] > 1 :
             print('{} deleted'.format(elt['name_loc']))
-    else : #si fichier ou symlink
+    else : #si fichier ou symlink ou hardlink
         try :
             os.unlink(rep)
             if dic['-v'] > 1 :
@@ -189,6 +190,9 @@ def receive_daemon(dst,dic,soc):
         if dic['pull']:
             filelistReceiver = creation_filelist_receiver(dst,dic)
             nbrFile = len(filelistReceiver)
+            if nbrFile == 0:
+                tag=['','l',(0,0)]
+                message.envoit_socket(soc,tag)
             for i in range(nbrFile):
                 tag = [filelistReceiver[i]['name_loc'],'l',(i+1,nbrFile)]
                 message.envoit_socket(soc,tag,v=filelistReceiver[i])

@@ -80,6 +80,7 @@ def parcours(dir,nom_loc,dic,whoami):
             if whoami == 'list-only':
                 file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
             file_list = file_list + parcours_rec(dir,nom_loc,dic['-v'],whoami)
+            print(file_list)
         else:
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :
@@ -93,12 +94,13 @@ def parcours(dir,nom_loc,dic,whoami):
     return file_list
 
 
-def norm_liste_dir(lis_dir,whoami) :
+def norm_liste_dir(lis_dir,dic,whoami) :
     '''donne le nom absolu et le nom local qui sera utilisé (ie '') des fichiers et repertoires de list_dir
 
     utilisee par la fonction principale filelist
 
     input : lis_dir = liste des noms des fichiers et repertoires a traiter (liste de string)
+            dic = dictionnaire des options (dictionnaire)
             whoami = role du processus (string) (list-only,receiver,sender)
     output : lis_dir_abs = liste des noms absolus des fichiers et repertoires (liste de string)
             lis_dir = liste des noms locaux ('') des fichiers et repertoires (liste de string)
@@ -106,7 +108,7 @@ def norm_liste_dir(lis_dir,whoami) :
     lis_dir_abs=[]
     i = 0
     while i < len(lis_dir) :
-        if lis_dir[i][-1]=='/':
+        if lis_dir[i][-1]=='/' and not dic['-d']:
             lis_dir_abs.append(os.path.abspath(lis_dir[i])+'/')
             if whoami != 'list-only':
                 lis_dir[i]=''
@@ -114,7 +116,7 @@ def norm_liste_dir(lis_dir,whoami) :
         else:
             lis_dir_abs.append(os.path.abspath(lis_dir[i]))
             if whoami != 'list-only':
-                lis_dir[i]=''
+                lis_dir[i]=lis_dir_abs[i].split('/')[-1]
         i += 1
     i = 0
     while i < len(lis_dir) :
@@ -149,7 +151,7 @@ def filelist(lis_dir,dic,whoami):
     if dic['-v'] :
         print('building file list {} ... '.format(whoami), end='' if dic['-v'] < 2 else '\n')
     file_list = []
-    lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,whoami)
+    lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic,whoami)
     if dic['-v'] > 1 :
         print('list {} normalized'.format(whoami))
     for i in range(len(lis_dir_abs)):

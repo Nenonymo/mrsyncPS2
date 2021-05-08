@@ -34,10 +34,12 @@ def envoit_list_sender(dir,dic,w):
     '''
     file_list = filelist.filelist(dir,dic,'sender')
     nbr_file = len(file_list)
-
+    if nbr_file == 0:
+        tag=['','l',(0,0)]
+        message.envoit(w,tag)
     for i in range(nbr_file):
         tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
-        message.envoit(w,tag,v=file_list[i],lineFile='comSize2')
+        message.envoit(w,tag,v=file_list[i])
     
 
 def envoit_fichier(gs_s,sr_s,dic):
@@ -153,6 +155,9 @@ def sender_daemon(src,dic,gs_s,clisock):
     if dic['push']:
         filelistSender = filelist.filelist(src,dic,'sender')
         nbrFile=len(filelistSender)
+        if nbrFile == 0:
+            tag=['','l',(0,0)]
+            message.envoit_socket(soc,tag)
         for i in range(nbrFile):
                 tag = [filelistSender[i]['name_loc'],'l',(i+1,nbrFile)]
                 message.envoit_socket(clisock,tag,v=filelistSender[i])

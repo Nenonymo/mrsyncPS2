@@ -18,9 +18,10 @@ def server_local(dirr,dic,gs_g,sr_r):
 def reception_filelist(soc):
     file_lists=[]
     tag = ['','l',(0,1)]
-    while tag[2][0]<tag[2][1]:  #file_lists ne peut pas etre vide
+    while tag[2][0]<tag[2][1]:
         tag,data = message.recoit_socket(soc)
-        file_lists.append(message.str_to_fic(data))
+        if tag[2][1]!=0:
+            file_lists.append(message.str_to_fic(data))
     return file_lists
 
 def envoit_filelist(file_list,soc):
@@ -55,7 +56,6 @@ def server_daemon(dic):
             if dic['pull']:
                 if dic['--list-only']:
                     filelistSender = filelist.filelist(src,dic,'list-only')
-                    print(filelistSender)
                     envoit_filelist(filelistSender,clisock)
                     sys.exit(0)
                 filelistSender = filelist.filelist(src,dic,'sender')

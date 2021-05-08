@@ -84,6 +84,12 @@ def argument_management(dic, elt, elt_next) :
         dic['-r'] = True
         dic['-p'] = True
         dic['-t'] = True
+    elif elt == '-d':
+        dic['-d']=True
+        dic['-r']=False
+    elif elt == '-r':
+        if not dic['-d']:
+            dic['-r']=True
     elif '=' in elt :   #s'il y a '=' on fait l'affectation
         j = elt.split('=')
         if j[0] == '--timeout' or j[0] == '--port':

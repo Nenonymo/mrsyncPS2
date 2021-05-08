@@ -103,8 +103,6 @@ def no_skip(fichier,file_list_receiver,dic):
                     return False
     if dic['--existing'] and new_file :
         return False
-
-#gestion des fichiers spéciaux (device node) ?
     return True
 
 
@@ -229,7 +227,6 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
 
 #A faire : gérer les options perm et time
 '''à ajouter :
--d : transfer directories without recursing
 -H : preserve hard links
 -p : preserve permissions
 -t : preserve times
