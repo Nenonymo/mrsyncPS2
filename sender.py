@@ -73,13 +73,13 @@ def envoit_fichier(gs_s,sr_s,dic):
             print('sending file \'{}\' ... '.format(data['name_loc']), end='')
         if os.path.isdir(data['name']):  #repertoire
             tag_e = [tag[0],'r',(1,1)]
-            if dic["--daemon"]:
+            if dic["--daemon"] or dic['daemon']:
                 message.envoit_socket(sr_s,tag_e,v=data)
             else :
                 message.envoit(sr_s,tag_e,v=data)
         elif os.path.islink(data['name']): #lien symbolique
             tag_e = [tag[0],'s',(1,1)]
-            if dic["--daemon"]:
+            if dic["--daemon"] or dic['daemon']:
                 message.envoit_socket(sr_s,tag_e,v=data)
             else :
                 message.envoit(sr_s,tag_e,v=data)
@@ -91,7 +91,7 @@ def envoit_fichier(gs_s,sr_s,dic):
             if size_file%taille_msg != 0:
                 nbr_transmission += 1
             tag_e = [tag[0],'f',(1,nbr_transmission)]
-            if dic["--daemon"]:
+            if dic["--daemon"] or dic['daemon']:
                 message.envoit_socket(sr_s,tag_e,v=data)
             else :
                 message.envoit(sr_s,tag_e,v=data)
@@ -100,7 +100,7 @@ def envoit_fichier(gs_s,sr_s,dic):
             while j <= nbr_transmission :
                 msg = os.read(fd,taille_msg).decode('utf-8')
                 tag_e = [tag[0],'f',(j,nbr_transmission)]
-                if dic["--daemon"]:
+                if dic["--daemon"] or dic['daemon']:
                     message.envoit_socket(sr_s,tag_e,v=msg)
                 else :
                     message.envoit(sr_s,tag_e,v=msg)
@@ -137,17 +137,25 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
     sys.exit(0)
 
 
-def sender_daemon(dic,gs_s,clisock):
+def sender_daemon(src,dic,gs_s,clisock):
     '''gere la partie sender en mode pull daemon
 
     utilisee dans server_daemon, dans server.py
 
-    input : dic = dictionnaire des options (dictionnaire)
+    input : src = repertoires sources (liste de string)
+            dic = dictionnaire des options (dictionnaire)
             gs_s = si pull descripteur de fichier cote sender, pipe generateur vers sender (descripteur de fichiers, int)
                    si push socket client (socket)
             clisock = socket client (socket)
     output : rien
     '''
+    #envoit filelist
+    if dic['push']:
+        filelistSender = filelist.filelist(src,dic,'sender')
+        nbrFile=len(filelistSender)
+        for i in range(nbrFile):
+                tag = [filelistSender[i]['name_loc'],'l',(i+1,nbrFile)]
+                message.envoit_socket(clisock,tag,v=filelistSender[i])
     #reception delete liste
     if dic['push']: #cote client
         tag,data = message.recoit_socket(gs_s)

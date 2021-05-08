@@ -62,7 +62,7 @@ def server_daemon(dic):
                 r,w = os.pipe()
                 pid1 = os.fork()
                 if pid1 == 0 :
-                    sender.sender_daemon(dic,r,clisock)
+                    sender.sender_daemon(src,dic,r,clisock)
                 else :
                     #reception file_list_sender 
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,w)
@@ -79,7 +79,7 @@ def server_daemon(dic):
                 filelistReceiver = filelist.filelist([dst],dic,'receiver')
                 pid1 = os.fork()
                 if pid1 == 0: #role receiver
-                    receiver.receive_daemon(dst,dic,gs_g,sr_r)
+                    receiver.receive_daemon(dst,dic,clisock)
                 else : #role generateur
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,clisock)
                 #on enregistre dans dst ce qu'on 

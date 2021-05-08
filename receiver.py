@@ -44,14 +44,14 @@ output : rien
 def reception_fichiers(dirr,d,dic):
     if dic['-v'] > 0 :
         print('receiving files ...', end=' ' if dic['-v'] < 2 else '\n')
-    if dic['daemon'] and dic['pull']:
+    if dic['daemon']:
         tag,data = message.recoit_socket(d)
     else :
         tag,data = message.recoit(d)
     nbr_file = tag[2][1]
     i = 1
     while i <= nbr_file:
-        if dic['daemon'] and dic['pull']:
+        if dic['daemon']:
             tag,data = message.recoit_socket(d)
         else :
             tag,data = message.recoit(d)
@@ -75,7 +75,7 @@ def reception_fichiers(dirr,d,dic):
             fd = os.open(chemin,os.O_CREAT|os.O_WRONLY|os.O_APPEND)
             j = tag[2][0]+1
             while j <= nbr_transmission:
-                if dic['daemon'] and dic['pull']:
+                if dic['daemon']:
                     tag,data = message.recoit_socket(d)
                 else :
                     tag,data = message.recoit(d)

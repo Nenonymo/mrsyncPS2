@@ -82,6 +82,7 @@ if __name__ == '__main__' :
             dest = dest.split('::')
             host = dest[0]  #a quoi sert host ??? addr ?
             dest = dest[1]
+            dest = os.path.abspath(dest)
             dic['push'] = True
             dic['pull'] = False
         elif '::' in src[0]:
@@ -109,7 +110,7 @@ if __name__ == '__main__' :
         if dic['pull']:
             receiver.receive_daemon(dest,dic,clisock)
         elif dic['push']:
-            sender.sender_daemon(dic,clisock,clisock)
+            sender.sender_daemon(src,dic,clisock,clisock)
 
     else : #si local
         if dic['-v'] > 1 :
