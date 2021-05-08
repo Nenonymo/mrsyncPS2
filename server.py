@@ -60,6 +60,13 @@ def server_daemon(dic):
                     sys.exit(0)
                 filelistSender = filelist.filelist(src,dic,'sender')
                 filelistReceiver = reception_filelist(clisock)
+                if len(filelistSender) == 0:
+                    tag = ['','l',(0,0)]
+                    message.envoit_socket(clisock,tag)
+                    message.envoit_socket(clisock,tag)
+                    clisock.close()
+                    os.kill(os.getppid(),signal.SIGCHLD)
+                    sys.exit(0)
                 r,w = os.pipe()
                 pid1 = os.fork()
                 if pid1 == 0 :
@@ -75,6 +82,10 @@ def server_daemon(dic):
             elif dic['push']:
                 #reception de filelist sender
                 filelistSender = reception_filelist(clisock)
+                if len(filelistSender) == 0:
+                    clisock.close()
+                    os.kill(os.getppid(),signal.SIGCHLD)
+                    sys.exit(0)
                 if dst[-1] != '/':
                     dst = dst + '/'
                 filelistReceiver = filelist.filelist([dst],dic,'receiver')

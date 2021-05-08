@@ -27,8 +27,9 @@ def reception_filelist_sender(fd):
     file_lists=[]
     tag = ['','l',(0,1)]
     while tag[2][0]<tag[2][1]:  #file_lists ne peut pas etre vide
-        tag,data = message.recoit(fd,lineFile='comSize2')
-        file_lists.append(message.str_to_fic(data))
+        tag,data = message.recoit(fd)
+        if tag[2][1]!= 0:
+            file_lists.append(message.str_to_fic(data))
     return file_lists
 
 '''receptionne les fichiers envoyés par sender et les crée dans le repertoire de destination
@@ -155,6 +156,12 @@ def receive_local(dirr,dic,gs_g,sr_r):
     file_listr = creation_filelist_receiver(dirr,dic)
     #reception de la liste de fichier du repertoire source
     file_lists=reception_filelist_sender(sr_r)
+    if len(file_lists) == 0:
+        try :
+            os.wait()
+        except :
+            pass
+        sys.exit(0)
     #creation du generateur
     pid=os.fork()
     if pid != 0: #père, générateur
