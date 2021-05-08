@@ -58,20 +58,14 @@ def envoit_fichier(gs_s,sr_s,dic):
         tag,data = message.recoit_socket(gs_s)
     else :                   #local and daemon pull
         tag,data = message.recoit(gs_s) 
-    if tag[2][1]==0:
-        nbr_file = 0
-        if dic['--daemon'] or dic['daemon']: #daemon push and pull
-            message.envoit_socket(sr_s,tag)
-        else : #local
-            message.envoit(sr_s,tag)
-    else :
-        data = message.str_to_dic(data)
-        tag = ['c','l',(0,tag[2][1])]
+    nbr_file = tag[2][1]
+    if nbr_file != 0:
+        data = message.str_to_fic(data)
         #on envoit le nbr de fichiers a traiter
-        if dic['--daemon'] or dic['daemon']: #daemon push and pull
-            message.envoit_socket(sr_s,tag)
-        else : #local
-            message.envoit(sr_s,tag)
+    if dic['--daemon'] or dic['daemon']: #daemon push and pull
+        message.envoit_socket(sr_s,tag)
+    else : #local
+        message.envoit(sr_s,tag)
     i=1
 
     while i <= nbr_file : #si send_list est vide, on rentre pas dans la boucle
@@ -120,7 +114,7 @@ def envoit_fichier(gs_s,sr_s,dic):
                 tag,data = message.recoit_socket(gs_s)
             else : #local and daemon pull
                 tag,data = message.recoit(gs_s)
-            data = message.str_to_dic(data)
+            data = message.str_to_fic(data)
 
     if dic['-v'] :
         print('done', end='\n' if dic['-v'] < 2 else ' sending files\n')

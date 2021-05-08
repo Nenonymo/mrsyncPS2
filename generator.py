@@ -138,7 +138,7 @@ def creation_sendlist(file_list_sender,file_list_receiver,verbose):
     return send_list,len(send_list)
 
 
-def envoyer_liste(liste,nbr_file,fd):
+def envoyer_liste(liste,nbr_file,fd,dic):
     '''envoit fichier par fichier la liste de fichiers liste au sender
 
     utilisee dans la fonction principale generator
@@ -147,6 +147,7 @@ def envoyer_liste(liste,nbr_file,fd):
             nbr_file = le nombre de fichiers à envoyer = taille de liste (int)
             fd = si local ou daemon pull : le descripteur de fichier de l'endroit ou on envoit les fichiers (descripteur de fichier, int)
                  si daemon push : la socket cliente (socket)
+            dic = dictionnaire des options (dictionnaire)
     output : rien
     '''
     if nbr_file == 0:   #si liste est vide
@@ -186,7 +187,7 @@ def generator_local(file_list_sender,file_list_receiver,dic,gs_g):
     if dic['-v'] :
         print('done' if dic['-v'] < 2 else 'sendlist created')
     #envoit de la liste des fichiers au sender
-    envoyer_liste(send_list,nbr_file,gs_g)
+    envoyer_liste(send_list,nbr_file,gs_g,dic)
     #attente de la fin des fils et terminaison
     os.wait()
     os.wait()
@@ -211,7 +212,7 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
         deleteList,nbrDelete = creation_deletelist(filelistSender,filelistReceiver)
     sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver)
     #envoit de la liste de fichier au sender
-    envoyer_liste(deleteList,nbrDelete,gs_g)
-    envoyer_liste(sendList,nbrFile,gs_g)
+    envoyer_liste(deleteList,nbrDelete,gs_g,dic)
+    envoyer_liste(sendList,nbrFile,gs_g,dic)
 
 #A faire : gérer les options perm et time

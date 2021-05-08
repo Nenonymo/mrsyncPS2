@@ -126,7 +126,7 @@ def recoit_socket(soc):
     
     return tag,msg
 
-def str_to_dic(v):
+def str_to_fic(v):
     '''convert a string en fichier (represente par un dictionnaire)
     la chaine de caractère doit avoir une forme de fichier ({a:b,c:d......})
 
@@ -145,6 +145,35 @@ def str_to_dic(v):
             d[e[0][2:-1]]=e[1][1:]
         else :
             d[e[0][2:-1]]=int(e[1][1:])
+    return d
+
+def str_to_dic(v):
+    '''convert a string en dictionnaire d'options
+    la chaine de caractère doit avoir une forme de dictionnaire d'option ({a:b,c:d......})
+
+    input : v = la chaine de caractere a convertir (string)
+    output : d = le dictionnaire d'option associé a v (dictionnaire)
+    '''
+    v = v[1:-1].split(',')
+    d=dict()
+    for i in range(len(v)):
+        e = v[i].split(':')
+        if i == 0 :
+            d[e[0][1:-1]]=int(e[1][1:])
+        elif i == 1:
+            d[e[0][2:-1]]=int(e[1][1:])
+        elif i == len(v)-1:
+            try :
+                d[e[0][2:-1]]=int(e[1][1:])
+            except :
+                d[e[0][2:-1]]=e[1][2:-1]
+        elif i == len(v) - 2 :
+            d[e[0][2:-1]]=e[1][2:-1]
+        else :
+            if e[1][1:] == 'False':
+                d[e[0][2:-1]]= False
+            else :
+                d[e[0][2:-1]]= True
     return d
 
 def str_to_diclist(v):

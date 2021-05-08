@@ -28,7 +28,7 @@ def reception_filelist_sender(fd):
     tag = ['','l',(0,1)]
     while tag[2][0]<tag[2][1]:  #file_lists ne peut pas etre vide
         tag,data = message.recoit(fd,lineFile='comSize2')
-        file_lists.append(message.str_to_dic(data))
+        file_lists.append(message.str_to_fic(data))
     return file_lists
 
 '''receptionne les fichiers envoyés par sender et les crée dans le repertoire de destination
@@ -55,7 +55,7 @@ def reception_fichiers(dirr,d,dic):
             tag,data = message.recoit_socket(d)
         else :
             tag,data = message.recoit(d)
-        data = message.str_to_dic(data)
+        data = message.str_to_fic(data)
         #repertoire
         if tag[1]=='r':
             chemin = os.path.join(dirr,tag[0])
@@ -173,7 +173,7 @@ def receive_daemon(dst,dic,soc):
         i = 1
         while i <= nbr_file:
             tag,data = message.recoit_socket(soc)
-            data = message.str_to_dic(data)
+            data = message.str_to_fic(data)
             taille_tot += data['size']
             if not dic['-q'] :
                 print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
