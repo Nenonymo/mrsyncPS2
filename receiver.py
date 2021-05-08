@@ -1,4 +1,4 @@
-import os,filelist,message,generator,sys
+import os,filelist,message,generator,sys,signal
 
 '''creation de la liste de fichier destination
 

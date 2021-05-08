@@ -77,17 +77,18 @@ def parcours(dir,nom_loc,dic,whoami):
     if dic['-r'] :
         st = os.stat(dir)
         if os.path.isdir(dir) and dir[-1]!='/':
-            file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc,whoami)
+            file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc,dic['-v'],whoami)
         elif os.path.isdir(dir):
             file_list = parcours_rec(dir,nom_loc,dic['-v'],whoami)
         else:
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :
+        st=os.stat(dir)
         if os.path.isdir(dir) and dir[-1]=='/':
             file_list = parcours_simple(dir,nom_loc,dic['-v'],whoami)
+            if whoami == 'receiver':
+                file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
         else :
-            print(dir)
-            st=os.stat(dir)
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     return file_list
 
