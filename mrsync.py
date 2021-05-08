@@ -26,7 +26,7 @@ if __name__ == '__main__' :
             sys.exit(0) #je sais pas quoi mettre pour le moment
 
         else:
-            #trucs s^urement importants
+            #trucs surement importants
             sshcom = "ssh -e none -l {} {}".format("distant", "localhost") #a remplacer avec le bon utilisateur et la bonne machine
             os.execvp("{} ./mrsync.py --server {}".format(sshcom, dic['brut'])) #remplacement du processus par le processus server, n'executeras plus aucun code suivant cette ligne !
 
@@ -37,11 +37,14 @@ if __name__ == '__main__' :
         
         #gestion détacher du file puis appel dans les deux cas du elif en dessous
         if dic['--no-detach']:
+            if dic['-v'] >= 1: print("Lancement du daemon en mode non detache")
             server.server_daemon(dic)
         else:
+            if dic['-v'] >= 1: print("Lancement du daemon en mode detache")
             #Deamonizing the process
             log_file = '/tmp/mrsync.log'
             #Vérification pas de démon en cours
+            if dic['-v'] >= 2: print("Verification qu'un autre daemon n'es pas en cours")
             os.system('ps -ef | grep -v grep | grep "mrsync.py" | wc -l > tmp')
             a = open('tmp', 'r').read()
             os.remove('tmp')
@@ -50,19 +53,24 @@ if __name__ == '__main__' :
                 print("erreur : mrsync est déjà en cours sur cette machine")
                 sys.exit(0)
 
+            if dic['-v'] >= 2: print("Séparation des processus et meurtre du pere")
             pid = os.fork() #Séparation en deux processus
             if pid > 0:
                 #terminaison du père, fils devient zombie
                 sys.exit(0)
+            if dic['-v'] >= 2: print("Changement du repertoire de travail\nDetachement du groupe de processus\nChangement du masque de permissions")
             os.chdir('/') #changement du répertoire actuel
             os.setsid() #detachement du processus du groupe de processus
             os.umask(0) #changement du masque de permissions
 
             #Deuxième fois séparation puis meurtre du parent
+            if dic['-v'] >= 2: print("Deuxieme separation des processus puis meurtre du parent")
             pid = os.fork()
             if pid > 0: sys.exit(0)
             
             #Redirection des descripteurs standards
+            if dic['-v'] == 1: print("Redirection des entrees/sorties, log du daemon dans {}".format(log_file))
+            if dic['-v'] > 1: print("Redirection des entrees/sorties :\n\tLog -> {}\n\n\tStdin <- devnull\n\tStdout <- Log\n\tStderr <- Log".format(log_file))
             sys.stdout.flush()
             sys.stderr.flush()
             i = open(os.devnull, 'r')
@@ -73,6 +81,7 @@ if __name__ == '__main__' :
             #e = open(os.devnull, 'w')
             #os.dup2(e.fileno(), sys.stderr.fileno())
             os.dup2(o.fileno(), sys.stderr.fileno())
+            if dic['-v'] >= 1: print("Lancement du serveur sur le daemon")
             server.server_daemon(dic)
 
     elif dic['daemon']:

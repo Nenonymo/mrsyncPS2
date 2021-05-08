@@ -151,12 +151,13 @@ OPTIONS SUMMARY
             --address=ADDRESS       bind address for outgoing socket to daemon
             --port=PORT             specify double-colon alternate port number
             --list-only             list the files instead of copying them
-       -h   --help                  show this help
+        -h  --help                  show this help
 
 
        mrsync  can also be run as a daemon, in which case the following options
        are accepted:
 
+        -v, --verbose               increase verbosity
             --daemon                run as an mrsync daemon
             --address=ADDRESS       bind to the specified address
             --no-detach             do not detach from the parent

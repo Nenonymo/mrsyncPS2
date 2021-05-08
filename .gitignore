@@ -5,6 +5,8 @@ __pycache__/
 test*
 pid
 comSize
+*.swp
+*.swo
 
 # C extensions
 *.so

@@ -97,7 +97,7 @@ def no_skip(fichier,file_list_receiver,dic):
             elif os.path.isfile(elt['name']):
                 if elt['size'] == fichier['size'] and elt['modtime'] == fichier['modtime']:
                     return dic['-I'] #-I est le contraire du mode normal, on envoie s'ils ont la même taille et le même modtime
-                elif dic['-u'] and fichier['modtime'] <= elt['modtime'] :
+                elif dic['-u'] and float(fichier['modtime']) <= float(elt['modtime']) :
                     return False
                 elif dic['--size-only'] and elt['size'] == fichier['size'] :
                     return False

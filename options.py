@@ -49,7 +49,7 @@ def parser(args) :
 
     if dic['--daemon'] :  #daemon (serveur), le client du daemon peut avoir toutes les options qu'il veut
         for key,elt in dic.items() :
-            if elt and key not in ['--daemon', '--address', '--no-detach', '--port', '-h'] :
+            if '-v' in elt or elt and key not in ['--daemon', '--address', '--no-detach', '--port', '-h'] :
                 raise Exception('Arguments invalide (daemon mode)')
 
 
