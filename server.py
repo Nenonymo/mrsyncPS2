@@ -55,7 +55,7 @@ def server_daemon(dic):
             dic = message.str_to_dic(data[0])
             dic['--daemon'] = True #pour tester si c'est le cote server dans les fonctions suivantes
             dst = data[1]
-            src = message.str_to_diclist(data[2]) #a mettre sous forme de liste
+            src = message.str_to_list(data[2]) #a mettre sous forme de liste
             if dic['pull']:
                 if dic['--list-only']:
                     filelistSender = filelist.filelist(src,dic,'list-only')

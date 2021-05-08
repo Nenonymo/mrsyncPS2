@@ -157,7 +157,7 @@ def str_to_dic(v):
     v = v[1:-1].split(',')
     d=dict()
     for i in range(len(v)):
-        e = v[i].split(':')
+        e = v[i].split(':') #probleme si : dans nom de fichier
         if i == 0 :
             d[e[0][1:-1]]=int(e[1][1:])
         elif i == 1:
@@ -175,6 +175,26 @@ def str_to_dic(v):
             else :
                 d[e[0][2:-1]]= True
     return d
+
+def str_to_list(v):
+    v = v[1:-1]
+    l = []
+    i = 1
+    mot = ''
+    while i < len(v):
+        if v[i]== ",":  
+            if v[i-1] == "'" and v[i-2] != "\\": #si ' se trouve dans le nom de fichier
+                l.append(mot[:-1])
+                mot = ''
+                i = i+3
+            else:
+                mot = mot + v[i]
+                i += 1
+        else :
+            mot = mot + v[i]
+            i+=1
+    l.append(mot[:-1])
+    return l
 
 def str_to_diclist(v): #changer en str to list avec nom fichier 
     '''convert a string into fichier (represente par un dictionnaire)
