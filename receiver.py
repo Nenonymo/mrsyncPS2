@@ -1,4 +1,4 @@
-import os,filelist,message,generator,sys,signal
+import os, stat, time, filelist,message,generator,sys,signal
 
 '''creation de la liste de fichier destination
 
@@ -168,15 +168,19 @@ def receive_daemon(dst,dic,soc):
     if dic['--list-only'] and dic['pull']:
         #On récupère la liste de fichier et tout ses éléments descripteurs
         taille_tot = 0
-        tag,data = message.recoit(d)
+        tag,data = message.recoit_socket(soc)
         nbr_file = tag[2][1]
+        data = message.str_to_fic(data)
+        taille_tot += data['size']
+        if not dic['-q'] :
+            print('{} {:>14} {} {}'.format(stat.filemode(data['mode']), data['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(float(data['modtime']))), data['name_loc']))    
         i = 1
-        while i <= nbr_file:
+        while i < nbr_file:
             tag,data = message.recoit_socket(soc)
             data = message.str_to_fic(data)
             taille_tot += data['size']
             if not dic['-q'] :
-                print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
+                print('{} {:>14} {} {}'.format(stat.filemode(data['mode']), data['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(float(data['modtime']))), data['name_loc']))
             i+=1
         if dic['-v']>0 and not dic['-q'] :
             print('\ntaille totale : {}'.format(taille_tot)) #nombres à changer, je ne sais pas ce à quoi ça correspond

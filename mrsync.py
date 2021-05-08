@@ -6,7 +6,7 @@ if __name__ == '__main__' :
     if os.path.exists("pid"): #a placer à la fin de l'éxécution du programme, quand tout est fini
         os.remove("pid")
     
-    if dic['--list-only'] :    #gerer le liste only avec le ssh dans list only ou ssh ?
+    if dic['--list-only'] and not dic['daemon'] and not dic['ssh']:    #gerer le liste only avec le ssh dans list only ou ssh ?
         if dic['-v'] > 1 :
             print('mode list-only')
         sender.send_listonly(src, dic)

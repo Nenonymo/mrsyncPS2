@@ -55,6 +55,7 @@ def server_daemon(dic):
             if dic['pull']:
                 if dic['--list-only']:
                     filelistSender = filelist.filelist(src,dic,'list-only')
+                    print(filelistSender)
                     envoit_filelist(filelistSender,clisock)
                     sys.exit(0)
                 filelistSender = filelist.filelist(src,dic,'sender')
