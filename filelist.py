@@ -154,4 +154,4 @@ def filelist(lis_dir,dic,whoami):
     return file_list
 
 #on affiche le nom local, que faire quand plusieurs repertoires differents ? plus englobant ?
-#le list-only dossier/ n'affiche pas le .
+#le list-only dossier/ n'affiche pas le .str_to_dic
