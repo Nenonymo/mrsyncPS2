@@ -2,6 +2,8 @@ import os, sys, socket, options, sender, server, receiver, message
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
+    print(os.getcwd())
+    print(src)
 
     if os.path.exists("pid"): #a placer à la fin de l'éxécution du programme, quand tout est fini
         os.remove("pid")
@@ -90,6 +92,11 @@ if __name__ == '__main__' :
             src[0]= src[0].split('::')
             host = src[0][0]
             src[0] = src[0][1]
+            for i in range(len(src)):
+                a=''
+                if src[i][-1]=='/': a = '/'
+                src[i] = os.path.abspath(src[i]) + a
+            print(src)
             dic['push'] = False
             dic['pull'] = True
         #se connecter au serveur + envoyer premieres infos

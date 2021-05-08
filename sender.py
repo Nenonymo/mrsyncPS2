@@ -1,4 +1,4 @@
-import os, sys, filelist, time, stat, message
+import os, sys, signal, filelist, time, stat, message
 
 
 def send_listonly(lis_dir,dic):
@@ -45,7 +45,7 @@ def envoit_fichier(gs_s,sr_s,dic):
 
     utilisee dans la fonction principale send_local
 
-    input : gs_g = descripteur de fichier cote sender, generateur vers sender (descripteur de fichier, int)
+    input : gs_s = descripteur de fichier cote sender, generateur vers sender (descripteur de fichier, int)
             sr_s = descripteur de fichier cote sender, sender vers receiver (descripteur de fichier, int)
                    socket cliente si mode server daemon(socket)
             dic = dictionnaire des options (dictionnaire)
@@ -150,16 +150,16 @@ def sender_daemon(dic,gs_s,clisock):
     '''
     #reception delete liste
     if dic['push']: #cote client
-        tag,data = message.recoit_socket(gs_g)
+        tag,data = message.recoit_socket(gs_s)
     elif dic['pull']: #cote server
-        tag,data = message.recoit(gs_g)
+        tag,data = message.recoit(gs_s)
     nbrFile = tag[2][1]
     message.envoit_socket(clisock,tag,data)
     for i in range(1,nbrFile):
         if dic['push']: #cote client
-           tag,data = message.recoit_socket(gs_g)
+           tag,data = message.recoit_socket(gs_s)
         elif dic['pull']: #cote server
-            tag,data = message.recoit(gs_g)
+            tag,data = message.recoit(gs_s)
         message.envoit_socket(clisock,tag,data)
     #reception de la liste des fichiers et envoit des fichiers
     envoit_fichier(gs_s,clisock,dic)

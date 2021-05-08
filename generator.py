@@ -219,7 +219,7 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
     output : rien
     '''
     deleteList =[]
-    nbDelete=0
+    nbrDelete=0
     if dic["--delete"]:
         deleteList,nbrDelete = creation_deletelist(filelistSender,filelistReceiver)
     sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver,dic)

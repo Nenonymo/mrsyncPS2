@@ -25,7 +25,7 @@ def recoit(fd, lineFile="comSize"):
 
     os.system('sed -i 1d {}'.format(lineFile))'''
 
-    taille = os.read(fd,50)
+    taille = os.read(fd,32)
     taille = taille.decode('utf-8')
     comSize = taille.split('r')[0]
     comSize = int(comSize)
@@ -64,7 +64,7 @@ def envoit(fd,tag,lineFile="comSize",v=''):
     '''with open(lineFile, 'a') as f: #ecriture de la longueur du write
         f.write('{}\n'.format(len(content)))'''
     nbr = str(len(content))
-    clp = 50 - len(nbr)
+    clp = 32 - len(nbr)
     nbr = (nbr + clp*"r").encode('utf-8')
     os.write(fd,nbr)
     #os.lseek(fd,1,os.SEEK_CUR)
@@ -89,7 +89,7 @@ def envoit_socket(soc, tag, v=''):
         raise ModeError("The send mode isn't of the followings: [f=file, r=dir, l=list]")
     content = bytes(content,'utf-8')
     taille = str(len(content))
-    clp = 50 - len(taille)
+    clp = 32 - len(taille)
     taille = (taille + clp*"r").encode('utf-8')
     soc.send(taille)           #packet size
     soc.send(content)          #packet
@@ -107,8 +107,9 @@ def recoit_socket(soc):
         tag (list): info about the file and the properties of the transmission (localName, cat, transmissionNumber)
         msg (string): content of the file'''
 
-    taille = soc.recv(50)   #size of the incomming packet
+    taille = soc.recv(32)   #size of the incomming packet
     taille = taille.decode('utf-8')
+    print(taille)
     comSize = taille.split('r')[0]
     comSize = int(comSize)
 

@@ -1,11 +1,14 @@
-import os, receiver, socket, signal, sender, generator, filelist, message
+import os, receiver, sys, socket, signal, sender, generator, filelist, message
 
 def handler_SIGCHLD(sig,frame):
-    (pid,statut)=os.waitpid(-1,0)
+    try:
+        (pid,statut)=os.waitpid(-1,0)
+    except ChildProcessError:
+        pass
     return
 
 def handler_SIGTERM(sig,frame):
-    os.kill(-1,signal.SIGINT)
+    #os.kill(-1,signal.SIGINT)
     sys.exit()
     return
 
@@ -17,7 +20,7 @@ def reception_filelist(soc):
     tag = ['','l',(0,1)]
     while tag[2][0]<tag[2][1]:  #file_lists ne peut pas etre vide
         tag,data = message.recoit_socket(soc)
-        file_lists.append(message.str_to_dic(data))
+        file_lists.append(message.str_to_fic(data))
     return file_lists
 
 def envoit_filelist(file_list,soc):
@@ -62,11 +65,11 @@ def server_daemon(dic):
                     envoit_filelist(filelistSender,clisock)
                     sys.exit(0)
                 filelistSender = filelist.filelist(src,dic,'sender')
-                filelistReceiver = reception_filelist(soc)
+                filelistReceiver = reception_filelist(clisock)
                 r,w = os.pipe()
                 pid1 = os.fork()
                 if pid1 == 0 :
-                    sender.send_daemon(dic,r,clisock)
+                    sender.sender_daemon(dic,r,clisock)
                 else :
                     #reception file_list_sender 
                     generator.generator_daemon(filelistSender,filelistReceiver,dic,w)
@@ -77,7 +80,7 @@ def server_daemon(dic):
                     sys.exit()
             elif dic['push']:
                 #reception de filelist sender
-                filelistSender = reception_filelist(soc)
+                filelistSender = reception_filelist(clisock)
                 if dst[-1] != '/':
                     dst = dst + '/'
                 filelistReceiver = filelist.filelist([dst],dic,'receiver')
