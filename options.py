@@ -39,7 +39,10 @@ def parser(args) :
     elif len(fichiers) == 1 :
         destination = '.'
         dic['--list-only'] = True
-    else :
+    elif dic['--daemon'] or dic['--server']:
+        destination = ''
+        fichiers = []
+    else:
         destination = fichiers[-1]
         fichiers = fichiers[:-1]
     

@@ -176,7 +176,7 @@ def str_to_dic(v):
                 d[e[0][2:-1]]= True
     return d
 
-def str_to_diclist(v):
+def str_to_diclist(v): #changer en str to list avec nom fichier 
     '''convert a string into fichier (represente par un dictionnaire)
     la chaine de caractère doit avoir une forme de liste ([a,b,...])
     avec a et b des fichiers
