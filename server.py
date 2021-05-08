@@ -36,20 +36,13 @@ def server_daemon(dic):
     addr = '127.0.0.1' #addresse par defaut ?
     if dic['--port'] != '':
         port = int(dic['--port'])
-    print('apres port')
     if dic['--address'] != '':
         addr = dic['--address']
-    print('adresse')
-    print("avant apres port et addr")
     servsock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
-    print("apres creation socket")
     servsock.bind((addr, port)) 
-    print("apres bind")
     servsock.listen(10) #maxqueuesize ?
-    print("avant l'attente")
     while True:
         clisock,(fromaddr,fromport) = servsock.accept()
-        print("apres")
         pid = os.fork()
         if pid == 0: #fils, gère la requète
             #reception du dictionnaire client, repertoire destination, repertoire source

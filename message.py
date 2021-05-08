@@ -109,7 +109,6 @@ def recoit_socket(soc):
 
     taille = soc.recv(32)   #size of the incomming packet
     taille = taille.decode('utf-8')
-    print(taille)
     comSize = taille.split('r')[0]
     comSize = int(comSize)
 
@@ -209,10 +208,8 @@ def str_to_diclist(v): #changer en str to list avec nom fichier
     i=0
     j=0
     l=[]
-    print(v)
     while i < len(v):
         e = v[i].split(':')
-        print(e)
         if e[0][0] == '{':
             j=0
             l1 = dict()

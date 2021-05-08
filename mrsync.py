@@ -2,8 +2,6 @@ import os, sys, socket, options, sender, server, receiver, message
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
-    print(os.getcwd())
-    print(src)
 
     if os.path.exists("pid"): #a placer à la fin de l'éxécution du programme, quand tout est fini
         os.remove("pid")
@@ -14,7 +12,7 @@ if __name__ == '__main__' :
         sender.send_listonly(src, dic)
 
     elif dic['--server']:
-        if dic['-v'] > 1: print("mode serveur")
+        if dic['-v'] > 1: print("mode serveur ssh")
 
         server.server_ssh(dic)
 
@@ -47,7 +45,6 @@ if __name__ == '__main__' :
             os.system('ps -ef | grep -v grep | grep "mrsync.py" | wc -l > tmp')
             a = open('tmp', 'r').read()
             os.remove('tmp')
-            print(a)
             if int(a) > 1:
                 #code erreur démon déjà en cours
                 print("erreur : mrsync est déjà en cours sur cette machine")
@@ -76,7 +73,6 @@ if __name__ == '__main__' :
             #e = open(os.devnull, 'w')
             #os.dup2(e.fileno(), sys.stderr.fileno())
             os.dup2(o.fileno(), sys.stderr.fileno())
-            print('We are trying to make this work !')
             server.server_daemon(dic)
 
     elif dic['daemon']:
@@ -96,7 +92,6 @@ if __name__ == '__main__' :
                 a=''
                 if src[i][-1]=='/': a = '/'
                 src[i] = os.path.abspath(src[i]) + a
-            print(src)
             dic['push'] = False
             dic['pull'] = True
         #se connecter au serveur + envoyer premieres infos
@@ -126,3 +121,4 @@ if __name__ == '__main__' :
             server.server_local(dest,dic,gs_g,sr_r)
         else : #fils, sender
             sender.send_local(src,dic,gs_s,sr_s)
+#love you
