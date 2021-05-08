@@ -1,1 +1,0 @@
-fichier help pour le mode daemon (différent de fichier help normal)

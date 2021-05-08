@@ -31,7 +31,7 @@ def supprimer(rep,verbose):
     utilisée dans delete_files lorsque l'option --delete est activée
     
     input : rep = un nom de répertoire absolu (string)
-            verbose = niveau de verbose 
+            verbose = niveau de verbose (int)
     output : rien
     '''
     cur_dir=os.listdir(rep)
@@ -55,6 +55,7 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
             file_list_receiver = la liste des fichiers de destination (qui se trouvent dans le répertoire de destination) (liste de fichiers)
             un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
             {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
+            verbose = niveau de verbose (int)
     output : rien
     '''
     for elt in file_list_receiver: #tout les elt de filelistreceiver
@@ -77,22 +78,32 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
                     pass
 
 
-def no_skip(fichier,file_list_receiver):
+def no_skip(fichier,file_list_receiver,dic):
     '''teste si le fichier 'fichier' doit ajoute a la send_list = liste des fichiers a envoyer au receiver
 
     utilisee dans la fonction creation_sendlist
 
     input : fichier = le fichier a tester (fichier)
             file_list_receiver = la liste des fichiers de destination (liste de fichiers)
+            dic = dictionnaire des options (dictionnaire)
     output : Vrai si le fichier doit etre envoyé, Faux sinon (booleen)
     '''
+    new_file = True
     for elt in file_list_receiver:
-        if elt['name_loc'] == fichier['name_loc'] :
-            if os.path.isdir(elt['name']) or os.path.islink(elt['name']):
+        if elt['name_loc'] == fichier['name_loc']:
+            new_file = False
+            if dic['--ignore-existing'] or os.path.isdir(elt['name']) or os.path.islink(elt['name']):
                 return False
             elif os.path.isfile(elt['name']):
-                if elt['size'] == fichier['size'] and elt['modtime'] == fichier['modtime']: #modtime ??
+                if elt['size'] == fichier['size'] and elt['modtime'] == fichier['modtime']:
+                    return dic['-I'] #-I est le contraire du mode normal, on envoie s'ils ont la même taille et le même modtime
+                elif dic['-u'] and fichier['modtime'] <= elt['modtime'] :
                     return False
+                elif dic['--size-only'] and elt['size'] == fichier['size'] :
+                    return False
+    if dic['--existing'] and new_file :
+        return False
+
 #gestion des fichiers spéciaux (device node) ?
     return True
 
@@ -119,21 +130,22 @@ def creation_deletelist(filelistSender,filelistReceiver):
     return deleteList,len(deleteList)
 
 
-def creation_sendlist(file_list_sender,file_list_receiver,verbose):
+def creation_sendlist(file_list_sender,file_list_receiver,dic):
     '''cree la liste de fichiers a envoyer au receiver
 
     utilisee dans la fonction principale generator
 
     input : file_list_sender = liste de fichiers sources (liste de fichiers)
             file_list_receiver = liste de fichiers destination (liste de fichiers)
+            dic = dictionnaire des options (dictionnaire)
     output : send_list = liste de fichiers à envoyer (liste de fichier)
             len(send_list) = taille de send_list (int)
     '''
     send_list=[]
     for elt in file_list_sender:
-        if no_skip(elt,file_list_receiver):
+        if no_skip(elt,file_list_receiver,dic):
             send_list.append(elt)
-        elif verbose > 1:
+        elif dic['-v'] > 1:
             print('{} skipped'.format(elt['name_loc']))
     return send_list,len(send_list)
 
@@ -183,7 +195,7 @@ def generator_local(file_list_sender,file_list_receiver,dic,gs_g):
             print('done',end='\n' if dic['-v'] < 2 else ' deleting files\n')
     if dic['-v'] :
         print('creation sendlist ...',end=' ' if dic['-v'] < 2 else '\n')
-    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver,dic['-v'])
+    send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver,dic)
     if dic['-v'] :
         print('done' if dic['-v'] < 2 else 'sendlist created')
     #envoit de la liste des fichiers au sender
@@ -210,9 +222,21 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
     nbDelete=0
     if dic["--delete"]:
         deleteList,nbrDelete = creation_deletelist(filelistSender,filelistReceiver)
-    sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver)
+    sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver,dic)
     #envoit de la liste de fichier au sender
     envoyer_liste(deleteList,nbrDelete,gs_g,dic)
     envoyer_liste(sendList,nbrFile,gs_g,dic)
 
 #A faire : gérer les options perm et time
+'''à ajouter :
+-d : transfer directories without recursing
+-H : preserve hard links
+-p : preserve permissions
+-t : preserve times
+--force : force deletion of dirs even if not empty
+
+(ceux-là, j'avoue ne pas les comprendre)
+--timeout=TIME : set I/O timeout in seconds
+--blocking-io : use blocking I/O for the remote shell
+-a : archive mode; same as -rpt (no -H)
+'''
