@@ -145,7 +145,7 @@ def str_to_fic(v):
             d[e[0][2:-1]]=e[1][1:]
         else :
             d[e[0][2:-1]]=int(e[1][1:])
-    return d
+    return d  #probleme avec size ??? si grande taile 
 
 def str_to_dic(v):
     '''convert a string en dictionnaire d'options
@@ -188,14 +188,16 @@ def str_to_diclist(v):
     i=0
     j=0
     l=[]
+    print(v)
     while i < len(v):
         e = v[i].split(':')
+        print(e)
         if e[0][0] == '{':
             j=0
             l1 = dict()
             l1[e[0][1:-1]]=e[1][2:-1]
         elif j == 1:
-            l1[e[0][2:-1]]=e[1][2:-1]
+            l1[e[0][2:-1]]=e[1][2:-1] #list index out of range
         elif e[1][-1] == '}': 
             l1[e[0][2:-1]]=e[1][1:]
             l.append(l1)

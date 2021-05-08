@@ -18,6 +18,7 @@ def parser(args) :
     if len(args) == 0 :
         show_help()
         sys.exit(0)
+    pas = False
     for i in range(len(args)) :
         if pas:
             pas=False
