@@ -235,8 +235,16 @@ def generator_daemon(filelistSender,filelistReceiver,dic,gs_g):
     deleteList =[]
     nbrDelete=0
     if dic["--delete"]:
+        if dic['-v'] > 0:
+            print('creation deletelist ...',end=' ' if dic['-v'] < 2 else '\n')
         deleteList,nbrDelete = creation_deletelist(filelistSender,filelistReceiver)
+        if dic['-v'] > 0:
+            print('done',end='\n' if dic['-v'] < 2 else ' deletelist created\n')
+    if dic['-v'] > 0:
+        print('creation sendlist ...',end=' ' if dic['-v'] < 2 else '\n')
     sendList,nbrFile = creation_sendlist(filelistSender,filelistReceiver,dic)
+    if dic['-v'] > 0:
+        print('done' if dic['-v'] < 2 else 'sendlist created')
     #envoit de la liste de fichier au sender
     envoyer_liste(deleteList,nbrDelete,gs_g,dic)
     envoyer_liste(sendList,nbrFile,gs_g,dic)
