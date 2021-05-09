@@ -105,25 +105,41 @@ def supprimer(rep,dic):
     output : rien
     '''
     if os.path.isdir(rep): #si repertoire
-        cur_dir=os.listdir(rep)
-        for elt in cur_dir: #pour tout element dans dossier en cours de traitement
-            elt = os.path.join(rep,elt) #On recupère l'adresse absolue de l'élément traité
-            if os.path.isdir(elt): #Si elt traité = répertoire
-                supprimer(elt,dic) #Suppression du repertoire
-            else: #si autre que repertoire (fichier/lien symbolique)
-                if dic['-v'] > 1 :
-                    print('{} deleted'.format(elt[len(rep)+1:]))
-                os.unlink(elt) #suppression du fichier
-        os.rmdir(rep) #suppression du repertoire
-        if dic['-v'] > 1 :
-            print('{} deleted'.format(elt['name_loc']))
+        try:
+            os.rmdir(rep) #suppression du repertoire
+            if dic['-v'] > 1 :
+                print('{} deleted'.format(rep))
+        except:
+            if dic['--force']:
+                cur_dir=os.listdir(rep)
+                for elt in cur_dir: #pour tout element dans dossier en cours de traitement
+                    elt = os.path.join(rep,elt) #On recupère l'adresse absolue de l'élément traité
+                    if os.path.isdir(elt): #Si elt traité = répertoire
+                        supprimer(elt,dic) #Suppression du repertoire
+                    else: #si autre que repertoire (fichier/lien symbolique)
+                        try :
+                            os.unlink(rep)
+                            if dic['-v'] > 1 :
+                                print('{} deleted'.format(rep))
+                        except :
+                            if dic['-v'] > 1 :
+                                print('{} permission not granted'.format(rep))
+                try:
+                    os.rmdir(rep) #suppression du repertoire
+                    if dic['-v'] > 1 :
+                        print('{} deleted'.format(rep))
+                except :
+                    if dic['-v'] > 1 :
+                        print('{} permission not granted'.format(rep))
     else : #si fichier ou symlink ou hardlink
         try :
             os.unlink(rep)
             if dic['-v'] > 1 :
-                print('{} deleted'.format(elt['name_loc']))
+                print('{} deleted'.format(rep))
         except :
-            pass
+            if dic['-v'] > 1 :
+                print('{} permission not granted'.format(rep))
+
 
 def reception_delete(soc,dic):
     '''recoit la delete liste depuis la socket soc et supprime les fichier
@@ -135,13 +151,21 @@ def reception_delete(soc,dic):
             dic = dictionnaire des options (dictionnaire)
     output : rien
     '''
+    if dic['-v'] > 0:
+        print('deleting files ...',end=' ' if dic['-v'] < 2 else '\n')
     tag,data = message.recoit_socket(soc)
     nbrFile = tag[2][1]
     if nbrFile != 0 :
-        supprimer(data['name'])
+        data = message.str_to_fic(data)
+        supprimer(data['name'],dic)
     for i in range(1,nbrFile):
         tag,data = message.recoit_socket(soc)
-        supprimer(data['name'])
+        data = message.str_to_fic(data)
+        supprimer(data['name'],dic)
+    if dic['-v'] > 0:
+        print('done',end='\n' if dic['-v'] < 2 else ' deleting files\n')
+    
+    
 
 def receive_local(dirr,dic,gs_g,sr_r):
     '''fonction principale du receiver en mode local
