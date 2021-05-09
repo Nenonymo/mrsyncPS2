@@ -2,11 +2,8 @@ import os, sys, socket, options, sender, server, receiver, message
 
 if __name__ == '__main__' :
     dic, src, dest = options.parser(sys.argv)
-
-    if os.path.exists("pid"): #a placer à la fin de l'éxécution du programme, quand tout est fini
-        os.remove("pid")
     
-    if dic['--list-only'] and not dic['daemon'] and not dic['ssh']:    #gerer le liste only avec le ssh dans list only ou ssh ?
+    if dic['--list-only'] and not dic['daemon'] and not dic['ssh']:
         if dic['-v'] > 1 :
             print('mode list-only')
         sender.send_listonly(src, dic)
@@ -23,10 +20,9 @@ if __name__ == '__main__' :
         pid = os.fork()
 
         if pid > 0: #père
-            sys.exit(0) #je sais pas quoi mettre pour le moment
+            sys.exit(0)
 
         else:
-            #trucs surement importants
             sshcom = "ssh -e none -l {} {}".format("distant", "localhost") #a remplacer avec le bon utilisateur et la bonne machine
             os.execvp("{} ./mrsync.py --server {}".format(sshcom, dic['brut'])) #remplacement du processus par le processus server, n'executeras plus aucun code suivant cette ligne !
 
@@ -89,7 +85,7 @@ if __name__ == '__main__' :
             print('mode daemon')
         if '::' in dest :
             dest = dest.split('::')
-            host = dest[0]  #a quoi sert host ??? 
+            host = dest[0]
             dest = dest[1]
             dest = os.path.abspath(dest)
             dic['push'] = True
@@ -108,7 +104,7 @@ if __name__ == '__main__' :
             sender.send_listonly(src, dic)
         #se connecter au serveur + envoyer premieres infos
         port = 10873
-        addr = '127.0.0.1' #addresse par defaut ?
+        addr = '127.0.0.1' #addresse par defaut
         if dic['--port'] != '':
             port = int(dic['--port'])
         if dic['--address'] != '':
