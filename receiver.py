@@ -138,10 +138,10 @@ def reception_delete(soc,dic):
     tag,data = message.recoit_socket(soc)
     nbrFile = tag[2][1]
     if nbrFile != 0 :
-        supprimer(data['name'])
+        supprimer(data['name'],dic)
     for i in range(1,nbrFile):
         tag,data = message.recoit_socket(soc)
-        supprimer(data['name'])
+        supprimer(data['name'],dic)
 
 def receive_local(dirr,dic,gs_g,sr_r):
     '''fonction principale du receiver en mode local
