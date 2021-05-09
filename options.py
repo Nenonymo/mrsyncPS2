@@ -80,6 +80,9 @@ def argument_management(dic, elt, elt_next) :
     if elt == '-h' :
         show_help()
         sys.exit(0)
+    elif elt == '--force':
+        dic['--delete']=True
+        dic['--force']=True
     elif elt == '-a': #same as rpt
         dic['-r'] = True
         dic['-p'] = True

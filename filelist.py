@@ -85,7 +85,7 @@ def parcours(dir,nom_loc,dic,whoami):
     else :
         st=os.stat(dir)
         if os.path.isdir(dir) and dir[-1]=='/':
-            if whoami == 'receiver' or whoami == 'list-only':
+            if whoami == 'list-only':
                 file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
             file_list = file_list + parcours_simple(dir,nom_loc,dic['-v'],whoami)
         else :

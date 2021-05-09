@@ -172,7 +172,7 @@ def sender_daemon(src,dic,gs_s,clisock):
     message.envoit_socket(clisock,tag,data)
     for i in range(1,nbrFile):
         if dic['push']: #cote client
-           tag,data = message.recoit_socket(gs_s)
+            tag,data = message.recoit_socket(gs_s)
         elif dic['pull']: #cote server
             tag,data = message.recoit(gs_s)
         message.envoit_socket(clisock,tag,data)

@@ -24,29 +24,44 @@ def sort_receiver(dir):
                 dir[j]=tmp'''
 
 
-def supprimer(rep,verbose):
+def supprimer(rep,repabs,dic):
     '''supprime un repertoire et
     tous les fichiers qui se trouvent dedans
     
     utilisée dans delete_files lorsque l'option --delete est activée
     
-    input : rep = un nom de répertoire absolu (string)
-            verbose = niveau de verbose (int)
+    input : rep = nom local du repertoire (string)
+            repabs = un nom de répertoire absolu (string)
+            dic = dictionnaire des options (dictionnaire)
     output : rien
     '''
-    cur_dir=os.listdir(rep)
-    for elt in cur_dir: #pour tout element dans dossier en cours de traitement
-        elt = os.path.join(rep,elt) #On recupère l'adresse absolue de l'élément traité
-        if os.path.isdir(elt): #Si elt traité = répertoire
-            supprimer(elt,verbose) #Suppression du repertoire
-        else: #si autre que repertoire (fichier/lien symbolique)
-            if verbose > 1 :
-                print('{} deleted'.format(elt[len(rep)+1:]))
-            os.unlink(elt) #suppression du fichier
-    os.rmdir(rep) #suppression du repertoire
+    cur_dir=os.listdir(repabs)
+    if len(cur_dir) == 0 or dic['--force']:
+        for elt in cur_dir: #pour tout element dans dossier en cours de traitement
+            eltabs = os.path.join(repabs,elt) #On recupère l'adresse absolue de l'élément traité
+            elt = os.path.join(rep,elt)
+            if os.path.isdir(eltabs): #Si elt traité = répertoire
+                supprimer(elt,eltabs,dic) #Suppression du repertoire
+            else: #si autre que repertoire (fichier/lien symbolique)
+                try :
+                    os.unlink(eltabs) #suppression du fichier
+                    if dic['-v'] > 1 :
+                        print('{} deleted'.format(elt))
+                except:
+                    if dic['-v'] > 1 :
+                        print('{} permission not granted'.format(elt))
+        try :
+            os.rmdir(repabs) #suppression du repertoire
+            if dic['-v'] > 1 :
+                print('{} deleted'.format(rep))
+        except:
+            if dic['-v'] > 1 :
+                print('{} permission not granted'.format(rep))
+        
+        
 
 
-def delete_files(file_list_sender,file_list_receiver,verbose):
+def delete_files(file_list_sender,file_list_receiver,dic):
     '''supprime les fichiers et répertoires qui sont dans file_list_receiver et pas dans file_list_sender
 
     utilisée dans la fonction principale generator lorsque l'option --delete est activée
@@ -55,7 +70,7 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
             file_list_receiver = la liste des fichiers de destination (qui se trouvent dans le répertoire de destination) (liste de fichiers)
             un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
             {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
-            verbose = niveau de verbose (int)
+            dic = dictionnaire des options (dictionnaire)
     output : rien
     '''
     for elt in file_list_receiver: #tout les elt de filelistreceiver
@@ -66,16 +81,15 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
                 break
         if test: #si l'élément doit etre supprimé
             if os.path.isdir(elt['name']): #si repertoire
-                supprimer(elt['name'],verbose)
-                if verbose > 1 :
-                    print('{} deleted'.format(elt['name_loc']))
+                supprimer(elt['name_loc'],elt['name'],dic)
             else: #si fichier
                 try :
                     os.unlink(elt['name'])
-                    if verbose > 1 :
+                    if dic['-v'] > 1 :
                         print('{} deleted'.format(elt['name_loc']))
                 except :
-                    pass
+                    if dic['-v'] > 1 :
+                        print('{} permission not granted'.format(elt['name_loc']))
 
 
 def no_skip(fichier,file_list_receiver,dic):
@@ -186,18 +200,20 @@ def generator_local(file_list_sender,file_list_receiver,dic,gs_g):
     output : rien
     '''
     if dic["--delete"]:
-        if dic['-v'] :
+        if dic['-v'] > 0:
             print('deleting files ...',end=' ' if dic['-v'] < 2 else '\n')
-        delete_files(file_list_sender,file_list_receiver,dic['-v'])
-        if dic['-v'] :
+        delete_files(file_list_sender,file_list_receiver,dic)
+        if dic['-v'] > 0:
             print('done',end='\n' if dic['-v'] < 2 else ' deleting files\n')
-    if dic['-v'] :
+    if dic['-v'] > 0:
         print('creation sendlist ...',end=' ' if dic['-v'] < 2 else '\n')
     send_list,nbr_file = creation_sendlist(file_list_sender,file_list_receiver,dic)
-    if dic['-v'] :
+    if dic['-v'] > 0:
         print('done' if dic['-v'] < 2 else 'sendlist created')
+        
     #envoit de la liste des fichiers au sender
     envoyer_liste(send_list,nbr_file,gs_g,dic)
+
     #attente de la fin des fils et terminaison
     os.wait()
     os.wait()
