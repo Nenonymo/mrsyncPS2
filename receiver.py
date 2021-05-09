@@ -26,7 +26,7 @@ def reception_filelist_sender(fd):
     '''
     file_lists=[]
     tag = ['','l',(0,1)]
-    while tag[2][0]<tag[2][1]:  #file_lists ne peut pas etre vide
+    while tag[2][0]<tag[2][1]:
         tag,data = message.recoit(fd)
         if tag[2][1]!= 0:
             file_lists.append(message.str_to_fic(data))
@@ -57,18 +57,16 @@ def reception_fichiers(dirr,d,dic):
         else :
             tag,data = message.recoit(d)
         data = message.str_to_fic(data)
+        chemin = os.path.join(dirr,tag[0])
         #repertoire
         if tag[1]=='r':
-            chemin = os.path.join(dirr,tag[0])
             os.mkdir(chemin,data['mode'])
         #lien symbolique
         elif tag[1]=='s':
-            chemin=os.path.join(dirr,tag[0])
             fic = os.readlink(data['name'])
             os.symlink(fic,chemin)
         #fichier
         elif tag[1]=='f':
-            chemin = os.path.join(dirr,tag[0])
             nbr_transmission = tag[2][1]
             try:
                 os.unlink(chemin)
@@ -85,6 +83,11 @@ def reception_fichiers(dirr,d,dic):
                 data = data.encode('utf-8')
                 os.write(fd,data)
             os.close(fd)
+        
+        if dic['-t'] :
+            os.utime(chemin, (data['acctime'], data['modtime']))
+        if dic['-p'] :
+            os.chmod(chemin,data['mode'])
         if dic['-v'] > 1 :
             print('\'{}\' received'.format(tag[0]))
         i+=1

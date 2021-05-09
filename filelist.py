@@ -20,7 +20,7 @@ def parcours_simple(dir,nomLoc,verbose,whoami):
         name = os.path.join(dir,elt)
         nom = nomLoc +elt
         st = os.stat(name)
-        fileList.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+        fileList.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime})
         if verbose > 1 :
             print('[{}] file add : {}'.format(whoami,nom))
     return fileList
@@ -50,9 +50,9 @@ def parcours_rec(dir,nomLoc,verbose,whoami):
             print('[{}] file add : {}'.format(whoami,nom))
         st = os.stat(name)
         if os.path.isdir(name): #si repertoire on lui applique parcours_rec
-            fileList = fileList+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose,whoami)
+            fileList = fileList+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime}]+parcours_rec(name,nom,verbose,whoami)
         else:
-            fileList.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+            fileList.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime})
     return fileList
 
 
@@ -73,21 +73,21 @@ def parcours(dir,nomLoc,dic,whoami):
     if dic['-r'] : #si -r on parcours recursivement les repertoires
         st = os.stat(dir)
         if os.path.isdir(dir) and dir[-1]!='/' and whoami != 'list-only': #si le nom du repertoire source ne fini pas par /, on envoit juste le repertoire et son contenu car -r
-            fileList = [{'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nomLoc,dic['-v'],whoami)
+            fileList = [{'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime}]+parcours_rec(dir,nomLoc,dic['-v'],whoami)
         elif os.path.isdir(dir): #si le nom du repertoire fini par /, on envoit juste son contenu
             if whoami == 'list-only': #si list-only, on affiche aussi le nom du repertoire donc on l'ajoute
-                fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+                fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime})
             fileList = fileList + parcours_rec(dir,nomLoc,dic['-v'],whoami)
         else: #dir nest pas un repertoire
-            fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+            fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime})
     else :
         st=os.stat(dir)
         if os.path.isdir(dir) and dir[-1]=='/': #si le nom du repertoire fini par /, on envoit son contenu
             if whoami == 'list-only':
-                fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+                fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime})
             fileList = fileList + parcours_simple(dir,nomLoc,dic['-v'],whoami)
         else : #si le nom du repertoire source ne fini pas par /, on envoit juste le repertoire et pas son contenu (+ si dir n'est pas un repertoire)
-            fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+            fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime,'acctime':st.st_atime})
     return fileList
 
 
