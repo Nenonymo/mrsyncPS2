@@ -1,25 +1,23 @@
 import os, sys, signal, filelist, time, stat, message
 
-
-def send_listonly(lis_dir,dic):
-    '''recupere la liste de fichier file_list en utilisant filelist.py et affiche tous les fichiers de cette liste
+def send_listonly(lisDir,dic):
+    '''recupere la liste de fichier fileList en utilisant filelist.py et affiche tous les fichiers de cette liste
 
     utilisee dans mrsync.py
 
-    input : lis_dir = liste des noms de fichiers a traiter (liste de string)
+    input : lisDir = liste des noms de fichiers a traiter (liste de string)
             dic = dictionnaire des options (dictionnaire)
     output : rien
     ''' 
-    #On récupère la liste de fichier et tout ses éléments descripteurs
-    file_list = filelist.filelist(lis_dir,dic,'list-only')
+    fileList = filelist.filelist(lisDir,dic,'list-only') #On récupère la liste de fichier et tout ses éléments descripteurs
     #L'affichage
-    if not dic['-q'] :
-        taille_tot = 0
-        for elt in file_list:
-            taille_tot += elt['size']
+    if not dic['-q'] : #si -q on affiche rien a part les erreurs
+        tailletot = 0
+        for elt in fileList:
+            tailletot += elt['size']
             print('{} {:>14} {} {}'.format(stat.filemode(elt['mode']), elt['size'], time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(elt['modtime'])), elt['name_loc']))
-    if dic['-v'] :
-        print('\ntaille totale : {}'.format(taille_tot))
+    if dic['-v'] > 0 :
+        print('\ntaille totale : {}'.format(tailletot))
 
 
 def envoit_list_sender(dir,dic,w):
@@ -32,15 +30,15 @@ def envoit_list_sender(dir,dic,w):
             w = descripteur de fichier de l'endroit ou on envoit la liste (descripteur de fichier,int)
     output : rien
     '''
-    file_list = filelist.filelist(dir,dic,'sender')
-    nbr_file = len(file_list)
-    if nbr_file == 0:
+    fileList = filelist.filelist(dir,dic,'sender') #on cree la liste de fichiers a envoyer
+    nbrFile = len(file_list)
+    if nbrFile == 0: #si la liste de fichiers a envoyer est vide on envoit un paquet pour le dire
         tag=['','l',(0,0)]
         message.envoit(w,tag)
-        sys.exit(0)
-    for i in range(nbr_file):
-        tag = [file_list[i]['name_loc'],'l',(i+1,nbr_file)]
-        message.envoit(w,tag,v=file_list[i])
+        sys.exit(0) #termminaison car liste de fichiers a envoyer vide
+    for i in range(nbrFile):
+        tag = [fileList[i]['name_loc'],'l',(i+1,nbrFile)] #nom local du fichier, mode liste, numero de paquet, nombre de transmissions
+        message.envoit(w,tag,v=fileList[i]) #v=fichier
     
 
 def envoit_fichier(gs_s,sr_s,dic):
@@ -61,9 +59,9 @@ def envoit_fichier(gs_s,sr_s,dic):
         tag,data = message.recoit_socket(gs_s)
     else :                   #local and daemon pull
         tag,data = message.recoit(gs_s) 
-    nbr_file = tag[2][1]
-    if nbr_file != 0:
-        data = message.str_to_fic(data)
+    nbrFile = tag[2][1]
+    if nbrFile != 0:
+        data = message.str_to_fic(data) #chaine de caractere en fichier
         #on envoit le nbr de fichiers a traiter
     if dic['--daemon'] or dic['daemon']: #daemon push and pull
         message.envoit_socket(sr_s,tag)
@@ -71,7 +69,7 @@ def envoit_fichier(gs_s,sr_s,dic):
         message.envoit(sr_s,tag)
     i=1
 
-    while i <= nbr_file : #si send_list est vide, on rentre pas dans la boucle
+    while i <= nbrFile : #si la liste des fichiers aa envoyer est vide, on rentre pas dans la boucle
         if dic['-v'] > 1 :
             print('sending file \'{}\' ... '.format(data['name_loc']), end='')
         if os.path.isdir(data['name']):  #repertoire
@@ -112,12 +110,12 @@ def envoit_fichier(gs_s,sr_s,dic):
         if dic['-v'] > 1 :
             print('done')
         i += 1
-        if i <= nbr_file:
+        if i <= nbrFile:
             if dic['daemon'] and dic['push']: #daemon push
                 tag,data = message.recoit_socket(gs_s)
             else : #local and daemon pull
                 tag,data = message.recoit(gs_s)
-            data = message.str_to_fic(data)
+            data = message.str_to_fic(data) #chaine de caractere en fichier
 
     if dic['-v'] :
         print('done', end='\n' if dic['-v'] < 2 else ' sending files\n')
@@ -134,14 +132,13 @@ def send_local(dir,dic,gs_s,sr_s): #s'occupe des checksum
             sr_s = descripteur de fichier cote sender, pipe sender vers receiver (descripteur de fichiers, int)
     output : rien
     '''
-    envoit_list_sender(dir,dic,sr_s)
-    envoit_fichier(gs_s,sr_s,dic)
-    #terminaison
+    envoit_list_sender(dir,dic,sr_s) #envoit la liste de fichier de la source
+    envoit_fichier(gs_s,sr_s,dic) #envoit des fichier a la destination
     sys.exit(0)
 
 
 def sender_daemon(src,dic,gs_s,clisock):
-    '''gere la partie sender en mode pull daemon
+    '''gere la partie sender en mode daemon
 
     utilisee dans server_daemon, dans server.py
 
@@ -152,39 +149,31 @@ def sender_daemon(src,dic,gs_s,clisock):
             clisock = socket client (socket)
     output : rien
     '''
-    #envoit filelist
-    if dic['push']:
+    if dic['push']: #envoit de la liste de fichier a envoyer si cote client
         filelistSender = filelist.filelist(src,dic,'sender')
         nbrFile=len(filelistSender)
-        if nbrFile == 0:
+        if nbrFile == 0: #si pas de fichier a envoyer on previent le server
             tag=['','l',(0,0)]
             message.envoit_socket(clisock,tag)
             sys.exit(0)
-        for i in range(nbrFile):
+        for i in range(nbrFile): #envoit de la liste de fichiers
                 tag = [filelistSender[i]['name_loc'],'l',(i+1,nbrFile)]
                 message.envoit_socket(clisock,tag,v=filelistSender[i])
-    #reception delete liste
+    #reception de la liste des fichiers a supprimmer et transmission de celle ci a la destination
     if dic['push']: #cote client
         tag,data = message.recoit_socket(gs_s)
     elif dic['pull']: #cote server
         tag,data = message.recoit(gs_s)
     nbrFile = tag[2][1]
-    message.envoit_socket(clisock,tag,data)
+    message.envoit_socket(clisock,tag,data) #on renvoit le paquet precedant donc si la deleteList est vide on previent le receiver avec un pauet "vide"(=sans fichier, juste le tag (data =''))
     for i in range(1,nbrFile):
         if dic['push']: #cote client
             tag,data = message.recoit_socket(gs_s)
         elif dic['pull']: #cote server
             tag,data = message.recoit(gs_s)
         message.envoit_socket(clisock,tag,data)
-    #reception de la liste des fichiers et envoit des fichiers
+    #reception de la liste des fichiers a envoyer et envoit des fichiers
     envoit_fichier(gs_s,clisock,dic)
-    if dic['pull']:
-        os.kill(os.getppid(),signal.SIGCHLD)
+    if dic['pull']: #cote server
+        os.kill(os.getppid(),signal.SIGCHLD) #on envoit un message de presque terminaison pour que le pere soit pres a le recevoir
     sys.exit(0)
-
-#autres types de fichiers ???
-        
-#a faire : checksum
-
-#ouvre le fichier, le lit et l'envoie au receveur en plusieurs messages(+ gros que 16 Mo)
-#tag = quel fichier il s'agit+tag data pour les messages contennant des bytearray+tagfin d'envoie
