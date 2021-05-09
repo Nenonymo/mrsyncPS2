@@ -1,29 +1,29 @@
 import os, stat, time, filelist,message,generator,sys,signal
 
-'''creation de la liste de fichier destination
-
-utilisee dans la fonction principale receiver
-
-input : dirr = repertoire destination, chemin absolu (string)
-        dic = dictionnaire des options (dictionnaire)
-output : file_listr = liste de fichier destination (liste de fichier)
-        un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
-        {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
-'''
 def creation_filelist_receiver(dirr,dic):
+    '''creation de la liste de fichier destination
+
+    utilisee dans la fonction principale receiver
+
+    input : dirr = repertoire destination, chemin absolu (string)
+            dic = dictionnaire des options (dictionnaire)
+    output : file_listr = liste de fichier destination (liste de fichier)
+            un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
+            {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
+    '''
     if dirr[-1] != '/':
         dirr = dirr + '/'
     file_listr = filelist.filelist([dirr],dic,'receiver')
     return file_listr
 
-'''receptionne la liste des fichiers source
-
-utilisee dans la fonction principale receiver
-
-input : fd = descripteur de fichier de l'endroit ou on receptionne les fichiers (descripteur de fichier, int)
-output : file_lists = liste des fichiers source (liste de fichiers)
-'''
 def reception_filelist_sender(fd):
+    '''receptionne la liste des fichiers source
+
+    utilisee dans la fonction principale receiver
+
+    input : fd = descripteur de fichier de l'endroit ou on receptionne les fichiers (descripteur de fichier, int)
+    output : file_lists = liste des fichiers source (liste de fichiers)
+    '''
     file_lists=[]
     tag = ['','l',(0,1)]
     while tag[2][0]<tag[2][1]:
@@ -32,17 +32,17 @@ def reception_filelist_sender(fd):
             file_lists.append(message.str_to_fic(data))
     return file_lists
 
-'''receptionne les fichiers envoyés par sender et les crée dans le repertoire de destination
-
-utilisee dans la fonction principale receiver
-
-input : dirr = repertoire de destination, chemin absolu (string)
-        d = descripteur de fichier de l'endroit ou on recoit les fichiers (descripteur de fichier, int)
-            ou socket server si mode daemon pull (socket)
-        dic = dictionnaire d'options
-output : rien
-'''
 def reception_fichiers(dirr,d,dic):
+    '''receptionne les fichiers envoyés par sender et les crée dans le repertoire de destination
+
+    utilisee dans la fonction principale receiver
+
+    input : dirr = repertoire de destination, chemin absolu (string)
+            d = descripteur de fichier de l'endroit ou on recoit les fichiers (descripteur de fichier, int)
+                ou socket server si mode daemon pull (socket)
+            dic = dictionnaire d'options
+    output : rien
+    '''
     if dic['-v'] > 0 :
         print('receiving files ...', end=' ' if dic['-v'] < 2 else '\n')
     if dic['daemon']:
@@ -176,6 +176,14 @@ def receive_local(dirr,dic,gs_g,sr_r):
 
 
 def receive_daemon(dst,dic,soc):
+    '''fonction principale du receiver en mode local
+
+    input : dst: repertoire de destination (str)
+            dic: dictionnaire des options (dic)
+            soc: socket de communication du daemon (socket)
+
+    output : rien
+    '''
     if dic['--list-only'] and dic['pull']:
         #On récupère la liste de fichier et tout ses éléments descripteurs
         taille_tot = 0
