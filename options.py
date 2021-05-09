@@ -108,7 +108,7 @@ def argument_management(dic, elt, elt_next) :
         dic['-v'] = 0
     elif '-v' in elt : #si on veut ajouter de la verbose et qu'on n'est pas en mode -quiet(il est prioritaire) et on limite la verbose à 3
             if not dic['-q'] : 
-                dic['-v'] = min(elt.count('v'),3)
+                dic['-v'] = min(dic['-v'] + elt.count('v'),3)
     else :                   #cas par défaut on set l'argument à True
         dic[elt] = True
     
