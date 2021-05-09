@@ -101,7 +101,7 @@ def no_skip(fichier,filelistReceiver,dic):
     for elt in filelistReceiver:
         if elt['name_loc'] == fichier['name_loc']: #si fichier existe dans le repertoire destination 
             new_file = False #ce n'est pas un nouveau fichier
-            if dic['--ignore-existing'] or os.path.isdir(elt['name']) or (os.path.islink(elt['name'] and )): #si --ignore-existing alors on envoit pas si le fichier existe deja dans la destination, pareil si le repertoire ou le lien symbolique existe deja
+            if dic['--ignore-existing'] or os.path.isdir(elt['name']) or os.path.islink(elt['name']): #si --ignore-existing alors on envoit pas si le fichier existe deja dans la destination, pareil si le repertoire ou le lien symbolique existe deja
                 return False
             elif os.path.isfile(elt['name']): #si c'est un fichier
                 if elt['size'] == fichier['size'] and elt['modtime'] == fichier['modtime']: #si -I ont envoit s'ils ont la même taille et la même date de derniere modification sinon on envoit pas

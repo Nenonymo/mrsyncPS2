@@ -104,19 +104,18 @@ def norm_liste_dir(lis_dir,dic,whoami) :
     '''
     lis_dir_abs=[]
     i = 0
-    while i < len(lis_dir) :
-        if lis_dir[i][-1]=='/' and not dic['-d']:
+    while i < len(lis_dir) : #on recupere tous les noms absolus et on met a jour les noms locaux
+        if lis_dir[i][-1]=='/' and not dic['-d']: #si le repertoire termine par / on l'ajoute car on aura pas la meme fileList si il est la ou non, si dic -d on transfert le repertoire sans ce qu'il y a dedans donc c'est comme si il n'y avait pas /
             lis_dir_abs.append(os.path.abspath(lis_dir[i])+'/')
             if whoami != 'list-only':
                 lis_dir[i]=''
-
         else:
             lis_dir_abs.append(os.path.abspath(lis_dir[i]))
             if whoami != 'list-only':
                 lis_dir[i]=lis_dir_abs[i].split('/')[-1]
         i += 1
     i = 0
-    while i < len(lis_dir) :
+    while i < len(lis_dir) : #on supprimme les doublons
         j = i+1
         while j < len(lis_dir) :
             if lis_dir_abs[i] == lis_dir_abs[j] :
@@ -151,8 +150,17 @@ def filelist(lis_dir,dic,whoami):
     lis_dir_abs,lis_dir = norm_liste_dir(lis_dir,dic,whoami)
     if dic['-v'] > 1 :
         print('list {} normalized'.format(whoami))
-    for i in range(len(lis_dir_abs)):
+    for i in range(len(lis_dir_abs)): #on traite chaque repertoires donnés dans la source
         file_list = file_list + parcours(lis_dir_abs[i],lis_dir[i],dic,whoami)
+    i=0
+    while i < len(file_list) : #on supprimme les doublons
+        j = i+1
+        while j < len(file_list) :
+            if file_list[i]['name'] == file_list[j]['name'] :
+                del file_list[j]
+            else:
+                j += 1
+        i += 1
     if dic['-v'] :
         print('{}done'.format('' if dic['-v'] < 2 else 'building file list {} '.format(whoami)))
     return file_list
