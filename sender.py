@@ -31,7 +31,7 @@ def envoit_list_sender(dir,dic,w):
     output : rien
     '''
     fileList = filelist.filelist(dir,dic,'sender') #on cree la liste de fichiers a envoyer
-    nbrFile = len(file_list)
+    nbrFile = len(fileList)
     if nbrFile == 0: #si la liste de fichiers a envoyer est vide on envoit un paquet pour le dire
         tag=['','l',(0,0)]
         message.envoit(w,tag)

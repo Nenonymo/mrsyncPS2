@@ -106,7 +106,7 @@ def no_skip(fichier,filelistReceiver,dic):
             elif os.path.isfile(elt['name']): #si c'est un fichier
                 if elt['size'] == fichier['size'] and elt['modtime'] == fichier['modtime']: #si -I ont envoit s'ils ont la même taille et la même date de derniere modification sinon on envoit pas
                     return dic['-I']
-                elif dic['-u'] and float(fichier['modtime']) <= float(elt['modtime']) :#si -u alors on envoit pas si la date de derniere modification du fichier dans la destination est inferieur a celle du fichier dans la source
+                elif dic['-u'] and fichier['modtime'] <= elt['modtime'] :#si -u alors on envoit pas si la date de derniere modification du fichier dans la destination est inferieur a celle du fichier dans la source
                     return False
                 elif dic['--size-only'] and elt['size'] == fichier['size'] : #si --size-only on envoit pas si esa tailles des deux fichier sont egales
                     return False

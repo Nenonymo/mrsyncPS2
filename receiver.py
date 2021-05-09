@@ -76,14 +76,13 @@ def reception_fichiers(dirr,d,dic):
             j = tag[2][0]+1
             while j <= nbr_transmission:
                 if dic['daemon']:
-                    tag,data = message.recoit_socket(d)
+                    tag,data1 = message.recoit_socket(d)
                 else :
-                    tag,data = message.recoit(d)
+                    tag,data1 = message.recoit(d)
                 j +=1
-                data = data.encode('utf-8')
-                os.write(fd,data)
+                data1 = data1.encode('utf-8')
+                os.write(fd,data1)
             os.close(fd)
-        
         if dic['-t'] :
             os.utime(chemin, (data['acctime'], data['modtime']))
         if dic['-p'] :

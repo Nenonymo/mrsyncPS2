@@ -125,10 +125,12 @@ def str_to_fic(v):
         e = v[i].split(':')
         if i == 0 :
             d[e[0][1:-1]]=e[1][2:-1]
-        elif i == 1 or i == len(v) - 2:
+        elif i == 1 :
             d[e[0][2:-1]]=e[1][2:-1]
+        elif i == len(v)-2:
+            d[e[0][2:-1]]=float(e[1][1:])
         elif i == len(v)-1:
-            d[e[0][2:-1]]=float(e[1][1:-2])
+            d[e[0][2:-1]]=float(e[1][1:])
         else :
             d[e[0][2:-1]]=int(e[1][1:])
     return d  
