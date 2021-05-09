@@ -69,7 +69,7 @@ def delete_files(file_list_sender,file_list_receiver,verbose):
                 supprimer(elt['name'],verbose)
                 if verbose > 1 :
                     print('{} deleted'.format(elt['name_loc']))
-            else: #si fidhier
+            else: #si fichier
                 try :
                     os.unlink(elt['name'])
                     if verbose > 1 :

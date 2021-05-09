@@ -80,7 +80,6 @@ def parcours(dir,nom_loc,dic,whoami):
             if whoami == 'list-only':
                 file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
             file_list = file_list + parcours_rec(dir,nom_loc,dic['-v'],whoami)
-            print(file_list)
         else:
             file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :

@@ -119,7 +119,7 @@ def supprimer(rep,dic):
         try :
             os.unlink(rep)
             if dic['-v'] > 1 :
-                    print('{} deleted'.format(elt['name_loc']))
+                print('{} deleted'.format(elt['name_loc']))
         except :
             pass
 
@@ -155,7 +155,7 @@ def receive_local(dirr,dic,gs_g,sr_r):
     #creation de la liste de fichier du repertoire de destination
     file_listr = creation_filelist_receiver(dirr,dic)
     #reception de la liste de fichier du repertoire source
-    file_lists=reception_filelist_sender(sr_r)
+    file_lists = reception_filelist_sender(sr_r)
     if len(file_lists) == 0:
         try :
             os.wait()
