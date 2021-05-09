@@ -1,100 +1,98 @@
 import os
 
-def parcours_simple(dir,nom_loc,verbose,whoami):
-    '''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier file_list
+def parcours_simple(dir,nomLoc,verbose,whoami):
+    '''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier fileList
     ne s'occupe que d'une seule couche
 
     utilisee dans la fonction parcours si il n'y a pas l'option -r
 
     input : dir = nom absolu du repertoire parcouru (string)
-            nom_loc = nom local du repertoire dir (string)
+            nomLoc = nom local du repertoire dir (string)
             verbose = niveau de verbose (int)
             whoami = role du processus (string)
-    output : file_list = liste des fichiers dans dir (liste de fichiers)
+    output : fileList = liste des fichiers dans dir (liste de fichiers)
     un fichier est représenté par un dictionnaire contenant des informations sur celui-ci
             {'name_loc':nom local,'name':nom absolu,'user':propriètaire,'groupe':groupe propriètaire,'mode':permissions,'size':taille,'modtime':date de derniere modification}
     '''
     curr_dir = os.listdir(dir)
-    file_list=[]
+    fileList=[]
     for elt in curr_dir:
         name = os.path.join(dir,elt)
-        nom = nom_loc +elt
+        nom = nomLoc +elt
         st = os.stat(name)
-        file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+        fileList.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
         if verbose > 1 :
             print('[{}] file add : {}'.format(whoami,nom))
-    return file_list
+    return fileList
 
 
-def parcours_rec(dir,nom_loc,verbose,whoami):
-    '''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier file_list
+def parcours_rec(dir,nomLoc,verbose,whoami):
+    '''parcours le repertoire dir et ajoute chaque fichier de ce repertoire a la liste de fichier fileList
     parcours recursivement le repertoire dir pour ajouter tous les fichiers de toutes les couches
 
     utilisee dans la fonction parcours si il y'a l'option -r
 
     input : dir = nom absolu du repertoire parcouru (string)
-            nom_loc = nom local du repertoire dir (string)
+            nomLoc = nom local du repertoire dir (string)
             verbose = niveau de verbose (int) 
             whoami = role du processus (string)
-    output : file_list = liste des fichiers dans dir (liste de fichiers)
+    output : fileList = liste des fichiers dans dir (liste de fichiers)
     '''
     curr_dir = os.listdir(dir)
-    file_list=[]
+    fileList=[]
     for elt in curr_dir:
         name = os.path.join(dir,elt)
-        if nom_loc.endswith('/'):
-            nom = nom_loc+elt
-        elif nom_loc == '':
-            nom = elt
+        if nomLoc.endswith('/') or nomLoc == '':
+            nom = nomLoc+elt
         else :
-            nom=nom_loc+'/'+elt
+            nom=nomLoc+'/'+elt
         if verbose > 1 :
             print('[{}] file add : {}'.format(whoami,nom))
         st = os.stat(name)
-        if os.path.isdir(name):
-            file_list = file_list+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose,whoami)
+        if os.path.isdir(name): #si repertoire on lui applique parcours_rec
+            fileList = fileList+[{'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(name,nom,verbose,whoami)
         else:
-            file_list.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-    return file_list
+            fileList.append({'name_loc':nom,'name':name,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+    return fileList
 
 
-def parcours(dir,nom_loc,dic,whoami):
-    '''ajoute le fichier dir a la liste de fichier file_list
+def parcours(dir,nomLoc,dic,whoami):
+    '''ajoute le fichier dir a la liste de fichier fileList
     si dir est un repertoire, appelle les fonctions de parcours de repertoire pour ajouter (recursivement ou non)
     les fichiers a l'interieur de dir
 
-    utilisee par la fonction principale filelist
+    utilisee par la fonction principale fileList
 
-    input : dir = fichier ou repertoire a ajouter a file_list, chemin absolu (string)
-            nom_loc = nom local de dir (string)
+    input : dir = fichier ou repertoire a ajouter a fileList, chemin absolu (string)
+            nomLoc = nom local de dir (string)
             dic = dictionnaire des options (dictionnaire)
             whoami = role du processus (string)
-    output : file_list = liste des fichiers du repertoire dir (liste de fichier)
+    output : fileList = liste des fichiers du repertoire dir (liste de fichier)
     '''
-    file_list=[]
-    if dic['-r'] :
+    fileList=[]
+    if dic['-r'] : #si -r on parcours recursivement les repertoires
         st = os.stat(dir)
-        if os.path.isdir(dir) and dir[-1]!='/' and whoami != 'list-only':
-            file_list = [{'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nom_loc,dic['-v'],whoami)
-        elif os.path.isdir(dir):
-            if whoami == 'list-only':
-                file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-            file_list = file_list + parcours_rec(dir,nom_loc,dic['-v'],whoami)
-        else:
-            file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+        if os.path.isdir(dir) and dir[-1]!='/' and whoami != 'list-only': #si le nom du repertoire source ne fini pas par /, on envoit juste le repertoire et son contenu car -r
+            fileList = [{'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime}]+parcours_rec(dir,nomLoc,dic['-v'],whoami)
+        elif os.path.isdir(dir): #si le nom du repertoire fini par /, on envoit juste son contenu
+            if whoami == 'list-only': #si list-only, on affiche aussi le nom du repertoire donc on l'ajoute
+                fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+            fileList = fileList + parcours_rec(dir,nomLoc,dic['-v'],whoami)
+        else: #dir nest pas un repertoire
+            fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
     else :
         st=os.stat(dir)
-        if os.path.isdir(dir) and dir[-1]=='/':
+        if os.path.isdir(dir) and dir[-1]=='/': #si le nom du repertoire fini par /, on envoit son contenu
             if whoami == 'list-only':
-                file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-            file_list = file_list + parcours_simple(dir,nom_loc,dic['-v'],whoami)
-        else :
-            file_list.append({'name_loc':nom_loc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
-    return file_list
+                fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+            fileList = fileList + parcours_simple(dir,nomLoc,dic['-v'],whoami)
+        else : #si le nom du repertoire source ne fini pas par /, on envoit juste le repertoire et pas son contenu (+ si dir n'est pas un repertoire)
+            fileList.append({'name_loc':nomLoc,'name':dir,'user':st.st_uid,'groupe':st.st_gid,'mode':st.st_mode,'size':st.st_size,'modtime':st.st_mtime})
+    return fileList
 
 
 def norm_liste_dir(lis_dir,dic,whoami) :
-    '''donne le nom absolu et le nom local qui sera utilisé (ie '') des fichiers et repertoires de list_dir
+    '''donne le nom absolu et le nom local qui sera utilisé des fichiers et repertoires de lis_dir
 
     utilisee par la fonction principale filelist
 
